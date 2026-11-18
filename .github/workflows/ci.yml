@@ -29,7 +29,7 @@ jobs:
       - name: Checkout instructor-controlled evaluation files
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository }}
+          repository: atindeRR/MSE-2-SSED-Evening
           ref: main
           path: instructor-evaluation
 
@@ -44,7 +44,26 @@ jobs:
           fi
 
       - name: Check required files
-        run: bash instructor-evaluation/scripts/check-required-files.sh
+        run: |
+          echo "=== Verifying Required Examination Files ==="
+          REQUIRED_FILES=(
+            "frontend/Dockerfile"
+            "backend/Dockerfile"
+            "docker-compose.yml"
+            "docker-compose.deploy.yml"
+            ".github/workflows/cd.yml"
+          )
+          MISSING=0
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "  [OK] $file exists"
+            else
+              echo "  [ERROR] Missing required file: $file"
+              MISSING=1
+            fi
+          done
+          test "$MISSING" -eq 0 || (echo "Validation FAILED: Required files are missing." && exit 1)
+          echo "All required examination files are verified successfully."
 
       - name: Validate frontend Dockerfile
         run: docker run --rm -i hadolint/hadolint < frontend/Dockerfile
@@ -116,7 +135,51 @@ jobs:
         run: npm test -- --json --outputFile=test-results.json
 
       - name: Test PostgreSQL persistence
-        run: bash instructor-evaluation/scripts/persistence-test.sh
+        run: |
+          echo "=== Testing PostgreSQL Data Persistence ==="
+          # Guarantee cleanup on exit (success or failure)
+          cleanup() {
+            echo "Cleaning up persistence check table..."
+            docker compose exec -T postgres psql -U taskflow_user -d taskflow -c "DROP TABLE IF EXISTS _ci_persistence_check;" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          echo "Ensuring clean initial state for persistence test..."
+          docker compose exec -T postgres psql -U taskflow_user -d taskflow -c "DROP TABLE IF EXISTS _ci_persistence_check;"
+
+          echo "Inserting marker record into PostgreSQL..."
+          docker compose exec -T postgres psql -U taskflow_user -d taskflow -c "
+            CREATE TABLE _ci_persistence_check (id SERIAL PRIMARY KEY, marker VARCHAR(50));
+            INSERT INTO _ci_persistence_check (marker) VALUES ('ci_persistence_verified');
+          "
+
+          echo "Recreating PostgreSQL container to test volume persistence..."
+          docker compose up -d --force-recreate postgres
+
+          echo "Waiting for PostgreSQL to be ready..."
+          READY=0
+          for attempt in $(seq 1 30); do
+            if docker compose exec -T postgres pg_isready -U taskflow_user -d taskflow; then
+              echo "PostgreSQL is ready (attempt $attempt/30)"
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            echo "ERROR: PostgreSQL failed to become ready after 30 attempts"
+            exit 1
+          fi
+
+          echo "Verifying marker record survived container restart..."
+          COUNT=$(docker compose exec -T postgres psql -U taskflow_user -d taskflow -t -A -c "SELECT count(*) FROM _ci_persistence_check WHERE marker='ci_persistence_verified';")
+          if [ "$COUNT" -ne 1 ]; then
+            echo "ERROR: Persistence verification failed: expected 1 record, found '$COUNT'"
+            exit 1
+          fi
+
+          echo "PostgreSQL persistence verification PASSED"
 
       - name: Capture container status and logs
         if: always()

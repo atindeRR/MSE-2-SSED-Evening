@@ -1,0 +1,9 @@
+{
+  "name": "Aditi Verma",
+  "roll_number": "202401100400014",
+  "section": "A",
+  "github_username": "aditiverma05",
+  "dockerhub_username": "aditi9569",
+  "frontend_image": "aditi9569/frontend:latest",
+  "backend_image": "aditi9569/backend:latest"
+}

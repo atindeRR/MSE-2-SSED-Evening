@@ -1,0 +1,6 @@
+{
+  "github_username": "keshav-107",
+  "dockerhub_username": "keshav0211",
+  "frontend_image": "keshav0211/frontend",
+  "backend_image": "keshav0211/backend"
+}

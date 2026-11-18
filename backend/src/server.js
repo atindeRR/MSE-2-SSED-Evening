@@ -3,6 +3,8 @@ import { config } from './config.js';
 import { waitForDatabase } from './db.js';
 import { connectRedis, redis } from './redis.js';
 
+app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+
 await waitForDatabase();
 await connectRedis();
 
@@ -17,4 +19,3 @@ async function shutdown() {
 }
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
-app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));

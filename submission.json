@@ -1,0 +1,32 @@
+{
+  "student": {
+    "name": "YOUR_NAME",
+    "roll_number": "YOUR_ROLL_NUMBER",
+    "section": "YOUR_SECTION",
+    "branch": "YOUR_BRANCH",
+    "github_username": "YOUR_GITHUB_USERNAME",
+    "dockerhub_username": "YOUR_DOCKERHUB_USERNAME"
+  },
+  "submission": {
+    "set": "Set 2 - Evening Shift",
+    "subject": "Software Engineering and DevOps (AI310B)",
+    "examination": "Mid-Semester Examination - 2",
+    "fork_repository_url": "https://github.com/YOUR_GITHUB_USERNAME/MSE-2-SSED-Evening",
+    "pull_request_url": "https://github.com/atindeRR/MSE-2-SSED-Evening/pull/YOUR_PR_NUMBER",
+    "branch_name": "main",
+    "dockerhub_frontend_image": "https://hub.docker.com/r/YOUR_DOCKERHUB_USERNAME/frontend",
+    "dockerhub_backend_image": "https://hub.docker.com/r/YOUR_DOCKERHUB_USERNAME/backend",
+    "github_actions_workflow_url": "https://github.com/YOUR_GITHUB_USERNAME/MSE-2-SSED-Evening/actions"
+  },
+  "implementation": {
+    "frontend_dockerfile": "frontend/Dockerfile",
+    "backend_dockerfile": "backend/Dockerfile",
+    "docker_compose": "docker-compose.yml",
+    "docker_compose_deploy": "docker-compose.deploy.yml",
+    "cd_workflow": ".github/workflows/cd.yml",
+    "custom_network": "app_network",
+    "postgres_volume": "postgres_data",
+    "frontend_port": 8080,
+    "backend_port": 3000
+  }
+}

@@ -4,7 +4,8 @@ name: Evening Shift Docker CI/CD
 on:
   push:
     branches: [main]
-
+  workflow_dispatch:
+  
 jobs:
   build-push-deploy:
     runs-on: ubuntu-latest

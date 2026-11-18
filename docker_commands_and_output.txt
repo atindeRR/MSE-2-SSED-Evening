@@ -1,0 +1,40 @@
+# Docker Commands and Outputs Log
+# Mid-Semester Examination - Software Engineering and DevOps (Set 2 - Evening Shift)
+# ==============================================================================
+
+
+================================================================================
+COMMAND: docker build -t arshadnazeer/frontend:v1 -t arshadnazeer/frontend:latest -t arshadnazeer/taskflow-frontend:latest MSE-2-SSED-Evening/frontend
+================================================================================
+OUTPUT:
+# naming to docker.io/arshadnazeer/frontend:v1 done
+# naming to docker.io/arshadnazeer/frontend:latest done
+# naming to docker.io/arshadnazeer/taskflow-frontend:latest done
+Successfully built frontend image with tags: v1, latest, taskflow-frontend:latest
+================================================================================
+
+
+================================================================================
+COMMAND: docker build -t arshadnazeer/backend:v1 -t arshadnazeer/backend:latest -t arshadnazeer/taskflow-backend:latest MSE-2-SSED-Evening/backend
+================================================================================
+OUTPUT:
+# naming to docker.io/arshadnazeer/backend:v1 done
+# naming to docker.io/arshadnazeer/backend:latest done
+# naming to docker.io/arshadnazeer/taskflow-backend:latest done
+Successfully built backend image with tags: v1, latest, taskflow-backend:latest
+================================================================================
+
+
+================================================================================
+COMMAND: docker images
+================================================================================
+OUTPUT:
+REPOSITORY                              TAG       IMAGE ID       SIZE
+arshadnazeer/backend                    latest    03c33482264f   211MB
+arshadnazeer/backend                    v1        03c33482264f   211MB
+arshadnazeer/frontend                   latest    93e81e5e61e0   93.9MB
+arshadnazeer/frontend                   v1        93e81e5e61e0   93.9MB
+arshadnazeer/taskflow-backend           latest    03c33482264f   211MB
+arshadnazeer/taskflow-frontend          latest    93e81e5e61e0   93.9MB
+================================================================================
+

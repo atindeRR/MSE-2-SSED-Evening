@@ -1,0 +1,12 @@
+{
+  "name": "Shreya Yadav",
+  "roll_number": "202401100400182",
+  "section": "C",
+  "branch": "CSE AIML",
+  "github_username": "ShreyaYadav-12",
+  "dockerhub_username": "shreyayadav12",
+  "repository_url": "https://github.com/ShreyaYadav-12/MSE-2-SSED-Evening",
+  "branch_name": "main",
+  "frontend_image": "shreyayadav12/frontend:latest",
+  "backend_image": "shreyayadav12/backend:latest"
+}

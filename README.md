@@ -338,3 +338,56 @@ Before submitting, verify the following:
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**
+
+---
+
+## Running and Verifying This Implementation
+
+### Local build and Compose deployment
+
+1. Copy `.env.example` to `.env` and set a random `POSTGRES_PASSWORD`, a long random
+   `JWT_SECRET`, and your Docker Hub username. Do not put account passwords or access
+   tokens in `.env` or commit that file.
+2. Build and start the local stack:
+
+   ```powershell
+   docker compose up --build -d
+   docker compose ps
+   ```
+
+3. Open the frontend at <http://localhost:8080>; the API health endpoint is
+   <http://localhost:3000/health>. PostgreSQL and Redis are available to the backend
+   over the Compose network and are not published to host ports.
+4. To stop the stack without deleting persistent PostgreSQL data, run
+   `docker compose down`. To remove the database volume as well, run
+   `docker compose down -v`.
+
+The PostgreSQL health check gates backend startup, and the backend health check gates
+frontend startup. PostgreSQL data is stored in the `postgres_data` named volume.
+
+### Publish and deploy Docker Hub images
+
+Fork this repository and push the implementation to the fork's `main` branch. In the
+Docker Hub account, create repositories named `backend` and `frontend` first. In the
+fork's **Settings → Secrets and variables → Actions**, add:
+
+- `DOCKERHUB_USERNAME`: your Docker Hub username
+- `DOCKERHUB_TOKEN`: a Docker Hub access token
+- `POSTGRES_PASSWORD`: a randomly generated database password
+
+The `Build, Publish and Deploy` workflow builds and publishes
+`<username>/backend` and `<username>/frontend`, each with `v1` and `latest` tags,
+then deploys the published `latest` images and runs the API integration tests. To run
+the image-based deployment manually, set the same values in `.env` and run:
+
+```powershell
+docker compose -f docker-compose.deploy.yml up -d
+docker compose -f docker-compose.deploy.yml ps
+```
+
+This deployment uses prebuilt frontend and backend images; the PostgreSQL initialization
+SQL file remains alongside the Compose files so a new database volume gets its schema.
+Capture genuine terminal, Docker Hub, application and Actions screenshots for the
+required PDF. You must create the repositories, configure the secrets, capture the
+screenshots and submit the fork pull request; after setup, the workflow publishes the
+images automatically.

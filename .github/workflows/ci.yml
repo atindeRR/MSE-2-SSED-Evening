@@ -1,3 +1,4 @@
+
 name: Docker Practical - CI Evaluation
 
 on:
@@ -20,42 +21,56 @@ jobs:
     timeout-minutes: 25
 
     steps:
+      # 1. Checkout submitted Pull Request code
       - name: Checkout submitted Pull Request commit
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: submission
 
+      # 2. Checkout original instructor repository
       - name: Checkout instructor-controlled evaluation files
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository }}
+          repository: atindeRR/MSE-2-SSED-Evening
           ref: main
           path: instructor-evaluation
 
+      # 3. Show submission identity
       - name: Show submission identity
+        working-directory: submission
         run: |
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Commit: $GITHUB_SHA"
+
           if [ -f submission.json ]; then
             cat submission.json
           else
             echo "::warning::submission.json is missing"
           fi
 
+      # 4. Check required files
       - name: Check required files
-        run: bash instructor-evaluation/scripts/check-required-files.sh
+        run: |
+          test -f instructor-evaluation/scripts/check-required-files.sh
+          bash instructor-evaluation/scripts/check-required-files.sh
 
+      # 5. Validate frontend Dockerfile
       - name: Validate frontend Dockerfile
-        run: docker run --rm -i hadolint/hadolint < frontend/Dockerfile
+        run: docker run --rm -i hadolint/hadolint < submission/frontend/Dockerfile
 
+      # 6. Validate backend Dockerfile
       - name: Validate backend Dockerfile
-        run: docker run --rm -i hadolint/hadolint < backend/Dockerfile
+        run: docker run --rm -i hadolint/hadolint < submission/backend/Dockerfile
 
+      # 7. Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 8. Create CI environment file
       - name: Create CI environment file
+        working-directory: submission
         run: |
           cat > .env <<'EOF'
           POSTGRES_DB=taskflow
@@ -67,16 +82,24 @@ jobs:
           PORT=3000
           EOF
 
+      # 9. Validate Docker Compose
       - name: Validate Docker Compose configuration
+        working-directory: submission
         run: docker compose config --quiet
 
+      # 10. Build images
       - name: Build frontend and backend images
+        working-directory: submission
         run: docker compose build
 
+      # 11. Start application
       - name: Start application stack
+        working-directory: submission
         run: docker compose up -d
 
+      # 12. Wait for backend health
       - name: Wait for backend health
+        working-directory: submission
         run: |
           for attempt in $(seq 1 40); do
             if curl --fail --silent http://localhost:3000/health; then
@@ -84,15 +107,19 @@ jobs:
               echo "Backend is healthy"
               exit 0
             fi
+
             echo "Waiting for backend ($attempt/40)..."
             sleep 3
           done
+
           echo "Backend did not become healthy"
           docker compose ps
           docker compose logs --no-color
           exit 1
 
+      # 13. Check frontend
       - name: Check frontend response
+        working-directory: submission
         run: |
           for attempt in $(seq 1 20); do
             if curl --fail --silent http://localhost:8080/ > /dev/null; then
@@ -101,13 +128,16 @@ jobs:
             fi
             sleep 3
           done
+
           docker compose logs frontend
           exit 1
 
+      # 14. Install instructor test dependencies
       - name: Install test dependencies
         working-directory: instructor-evaluation/tests
         run: npm install
 
+      # 15. Run API and Redis tests
       - name: Run API and Redis tests
         working-directory: instructor-evaluation/tests
         env:
@@ -115,29 +145,35 @@ jobs:
           NODE_OPTIONS: --experimental-vm-modules
         run: npm test -- --json --outputFile=test-results.json
 
+      # 16. Test PostgreSQL persistence
       - name: Test PostgreSQL persistence
-        run: bash instructor-evaluation/scripts/persistence-test.sh
+        working-directory: submission
+        run: bash ../instructor-evaluation/scripts/persistence-test.sh
 
+      # 17. Capture container status and logs
       - name: Capture container status and logs
         if: always()
+        working-directory: submission
         run: |
           mkdir -p evaluation-output
           docker compose ps > evaluation-output/containers.txt || true
           docker compose logs --no-color > evaluation-output/container-logs.txt || true
 
+      # 18. Generate evaluation summary
       - name: Generate evaluation summary
         if: always()
         run: |
           {
             echo "## Docker Practical CI Evaluation"
             echo ""
-            echo "- Repository: \`$GITHUB_REPOSITORY\`"
-            echo "- Commit: \`$GITHUB_SHA\`"
-            echo "- Pull request: \`${{ github.event.pull_request.html_url || 'Manual run' }}\`"
+            echo "- Repository: $GITHUB_REPOSITORY"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Pull request: ${{ github.event.pull_request.html_url || 'Manual run' }}"
             echo ""
-            echo "Review the workflow jobs and uploaded artifacts for detailed results."
+            echo "Review workflow jobs and artifacts for detailed results."
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # 19. Upload evaluation artifacts
       - name: Upload evaluation artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -145,10 +181,12 @@ jobs:
           name: docker-practical-results-${{ github.run_id }}
           path: |
             instructor-evaluation/tests/test-results.json
-            evaluation-output/
+            submission/evaluation-output/
           if-no-files-found: ignore
           retention-days: 30
 
+      # 20. Cleanup containers
       - name: Cleanup containers
         if: always()
+        working-directory: submission
         run: docker compose down -v --remove-orphans || true

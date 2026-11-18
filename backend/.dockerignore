@@ -1,4 +1,9 @@
 node_modules
-npm-debug.log
+.git
 .env
+.env.*
+npm-debug.log*
+coverage
 tests
+Dockerfile*
+docker-compose*

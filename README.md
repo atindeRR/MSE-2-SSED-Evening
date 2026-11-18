@@ -243,7 +243,7 @@ Every student must prepare a PDF document containing the implementation details 
 **PDF filename format:**
 
 ```text
-ROLL_NUMBER_STUDENT_NAME_SET2.pdf
+2400291530214_Vishal_Prajapati_SET2.pdf
 ```
 
 Your PDF must contain the following information:

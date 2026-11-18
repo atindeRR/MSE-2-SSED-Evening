@@ -335,6 +335,64 @@ Before submitting, verify the following:
 - [ ] Instructor CI checks passed, wherever available.
 - [ ] PDF documentation prepared with all required screenshots.
 - [ ] PDF uploaded to Moodle.
+
+---
+
+## Quick implementation and run guide
+
+### 1. Add credentials safely
+
+For local runs, copy `.env.example` to `.env`, then set a strong PostgreSQL password, a long random JWT secret, and your **Docker Hub username**. Use an alphanumeric PostgreSQL password so it can be used safely in the Compose connection URL. `.env` is ignored by Git; never commit it.
+
+For GitHub Actions, open **your fork → Settings → Secrets and variables → Actions → New repository secret** and add:
+
+- `DOCKERHUB_USERNAME`: your Docker Hub username (it can differ from your GitHub username).
+- `DOCKERHUB_TOKEN`: a Docker Hub access token with write access. Do not use or share your account password.
+- `POSTGRES_PASSWORD`: a strong alphanumeric password for the CI deployment database.
+
+### 2. Build and start from source
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+curl http://localhost:3000/health
+```
+
+Open <http://localhost:8080> to use TaskFlow. The frontend's Nginx proxy forwards `/api` to the backend. The backend health endpoint checks both PostgreSQL and Redis.
+
+### 3. Publish images and deploy using images only
+
+Push changes to `main` after adding the three GitHub secrets. The `Build, publish and deploy` workflow builds and pushes `frontend:v1`, `frontend:latest`, `backend:v1`, and `backend:latest`, then starts the stack from `docker-compose.deploy.yml`. To run that image-only deployment manually, ensure `.env` has your Docker Hub username and the same database/JWT variables, then run:
+
+```bash
+docker compose -f docker-compose.deploy.yml pull
+docker compose -f docker-compose.deploy.yml up -d
+docker compose -f docker-compose.deploy.yml ps
+curl http://localhost:3000/health
+```
+
+The deployment Compose file has no `build:` entries. PostgreSQL and Redis do not publish host ports.
+
+### 4. Check persistence and restart behavior
+
+After creating an account or task in the app, verify health and service discovery with `docker compose ps` and `curl http://localhost:3000/health`. To recreate only PostgreSQL while retaining its named volume:
+
+```bash
+docker compose stop postgres
+docker compose rm -f postgres
+docker compose up -d postgres
+docker compose ps
+curl http://localhost:3000/health
+```
+
+Sign back in and confirm the account/tasks remain. Restart Redis with `docker compose restart redis`, then check `docker compose ps` and the health endpoint again. Do not use `docker compose down -v` during the persistence demonstration because `-v` deletes the database volume.
+
+Capture your own terminal and browser screenshots for the PDF; do not present sample or CI-only output as local test evidence.
+
+### 5. Submit the fork and evidence
+
+After the workflow succeeds, save its run URL and the Docker Hub repository URLs. Create a pull request from your fork's `main` branch to `atindeRR/MSE-2-SSED-Evening:main`, using the required title format. Complete the PDF with your real student details, PR/workflow/image URLs, and screenshots, then upload it to Moodle and attach it to the PR.
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**

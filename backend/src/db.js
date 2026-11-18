@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { readFile } from 'node:fs/promises';
 import { config } from './config.js';
 
 const { Pool } = pg;
@@ -16,4 +17,10 @@ export async function waitForDatabase() {
     }
   }
   throw new Error('Could not connect to PostgreSQL after 30 attempts');
+}
+
+export async function initializeDatabase() {
+  const schema = await readFile(new URL('../db/init.sql', import.meta.url), 'utf8');
+  await pool.query(schema);
+  console.log('Database schema is ready');
 }

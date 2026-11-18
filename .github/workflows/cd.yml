@@ -14,11 +14,12 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish student's images to Docker Hub
+    name: Build, push, and verify deployment
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
-      - name: Checkout student's repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Validate required Docker Hub secrets
@@ -27,33 +28,35 @@ jobs:
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME secret" && exit 1)
-          test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN secret" && exit 1)
+          test -n "$DOCKERHUB_TOKEN"    || (echo "Missing DOCKERHUB_TOKEN secret"    && exit 1)
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push backend
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
 
-      - name: Build and push frontend
+      - name: Build and push frontend image
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
 
       - name: Create deployment environment file
@@ -81,10 +84,10 @@ jobs:
       - name: Pull published images
         run: docker compose -f docker-compose.deploy.yml pull
 
-      - name: Deploy using Docker Hub images
+      - name: Deploy using docker-compose.deploy.yml
         run: docker compose -f docker-compose.deploy.yml up -d
 
-      - name: Verify deployment
+      - name: Verify backend health
         run: |
           for attempt in $(seq 1 40); do
             if curl --fail --silent http://localhost:3000/health; then
@@ -101,7 +104,7 @@ jobs:
           done
           curl --fail --silent http://localhost:8080/ > /dev/null
 
-      - name: Run API tests against Docker Hub deployment
+      - name: Run API tests against deployed stack
         working-directory: tests
         env:
           BASE_URL: http://localhost:3000
@@ -115,9 +118,9 @@ jobs:
           {
             echo "## Docker Hub publication"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
+            echo "- Backend:  \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
             echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Commit:   \`${GITHUB_SHA}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup deployment

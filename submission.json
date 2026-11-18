@@ -1,0 +1,12 @@
+{
+  "set": "DOCKER-SET-2",
+  "student_name": "Prakhar Tiwari",
+  "roll_number": "202401100400138",
+  "section": "AIML-B",
+  "branch": "CSE (AIML)",
+  "github_username": "PrakharTiwari488",
+  "dockerhub_username": "prakhartiwari488",
+  "fork_repository": "https://github.com/PrakharTiwari488/MSE-2-SSED-Evening",
+  "frontend_image": "prakhartiwari488/frontend:latest",
+  "backend_image": "prakhartiwari488/backend:latest"
+}

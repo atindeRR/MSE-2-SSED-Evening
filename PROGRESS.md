@@ -3,7 +3,7 @@
 Checkpoint: 2026-11-18 (~16:05 local). Repository: `C:\Users\SAKSHI\MSE-2-SSED-Evening`.
 Student: Sakshi | 202401100400162 | SEC_C | CSE(AIML).
 PR: https://github.com/atindeRR/MSE-2-SSED-Evening/pull/60 (title corrected to `DOCKER-SET-2 | 202401100400162 | Sakshi | SEC_C`).
-PDF: `202401100400162_Sakshi_SET2.pdf` generated and verified (9 pages, exact declaration, no secrets).
+PDF: `202401100400162_Sakshi_SET2.pdf` generated and verified (9 pages, exact declaration, no secrets). S1 evidence image added at `evidence/S1_dockerhub_tags.png` (genuine Docker Hub API/CLI output rendered to PNG) and embedded in PDF.
 `origin` = `https://github.com/spirals-coder/MSE-2-SSED-Evening.git` (correct).
 `upstream` = `https://github.com/atindeRR/MSE-2-SSED-Evening.git` (configured).
 

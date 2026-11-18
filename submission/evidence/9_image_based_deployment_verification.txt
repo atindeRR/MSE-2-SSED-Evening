@@ -1,0 +1,53 @@
+=== IMAGE-BASED DEPLOYMENT (docker-compose.deploy.yml) ===
+Command: docker compose -f docker-compose.deploy.yml up -d
+Source Images:
+- Frontend: bsdgdydg/frontend:latest
+- Backend:  bsdgdydg/backend:latest
+- Database: postgres:16-alpine
+- Cache:    redis:7-alpine
+
+=== SERVICE STATUS (docker compose -f docker-compose.deploy.yml ps) ===
+NAME                IMAGE                      COMMAND                  SERVICE    STATUS                    PORTS
+taskflow-backend    bsdgdydg/backend:latest    "docker-entrypoint.s…"   backend    Up 15 seconds (healthy)   0.0.0.0:3000->3000/tcp
+taskflow-frontend   bsdgdydg/frontend:latest   "/docker-entrypoint.…"   frontend   Up 9 seconds (healthy)    0.0.0.0:8080->80/tcp
+taskflow-postgres   postgres:16-alpine         "docker-entrypoint.s…"   postgres   Up 20 seconds (healthy)   5432/tcp
+taskflow-redis      redis:7-alpine             "docker-entrypoint.s…"   redis      Up 20 seconds (healthy)   6379/tcp
+
+=== HEALTH ENDPOINTS ===
+$ curl http://localhost:3000/health
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+$ curl http://localhost:8080/health
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+$ curl -I http://localhost:8080/
+HTTP/1.1 200 OK
+Server: nginx/1.27.5
+Content-Type: text/html
+
+=== DATABASE PERSISTENCE IN DEPLOYED STACK ===
+$ docker exec taskflow-postgres psql -U taskflow_user -d taskflow -c "SELECT id, user_id, title, status FROM tasks WHERE title='Persistent Task';"
+ id | user_id |      title      | status  
+----+---------+-----------------+---------
+  2 |       3 | Persistent Task | Pending
+
+=== JEST API TEST SUITE AGAINST DOCKER HUB DEPLOYMENT (12/12 PASSED) ===
+PASS ./api.test.js
+  TaskFlow deployed API
+    ✓ TC01: health endpoint confirms API, PostgreSQL and Redis (86 ms)
+    ✓ TC02: register a user (266 ms)
+    ✓ TC03: reject duplicate email (131 ms)
+    ✓ TC04: login and receive token (153 ms)
+    ✓ TC05: reject unauthenticated task request (5 ms)
+    ✓ TC06: create a task (25 ms)
+    ✓ TC07: list tasks and populate cache (37 ms)
+    ✓ TC08: subsequent list can be served from Redis (14 ms)
+    ✓ TC09: update task status and invalidate cache (23 ms)
+    ✓ TC10: reject invalid task status (14 ms)
+    ✓ TC11: delete task (14 ms)
+    ✓ TC12: deleted task is no longer in list (14 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+Time:        28.218 s
+Result: DEPLOYMENT VERIFIED 100% WORKING

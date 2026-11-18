@@ -1,0 +1,9 @@
+=== HADOLINT BACKEND DOCKERFILE VALIDATION ===
+Command: Get-Content backend/Dockerfile | docker run --rm -i hadolint/hadolint
+Exit Code: 0 (No warnings or errors)
+
+=== BACKEND DOCKER BUILD ===
+Command: docker build -t taskflow-backend:test ./backend
+Result: Successfully built production backend using node:20-alpine
+Image Content Size: ~52.5 MB
+Status: SUCCESS

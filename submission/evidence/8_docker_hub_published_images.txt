@@ -1,0 +1,23 @@
+=== DOCKER HUB PUBLISHED IMAGES & MANIFESTS ===
+Account: bsdgdydg
+Registry: docker.io/bsdgdydg
+
+1. bsdgdydg/frontend:v1
+   Digest: sha256:a61e1b8d65e45383ddb3375c84585a24b2fd445f03bd40a2d57894216031b9b3
+   Platform: linux/amd64
+   Status: PUBLISHED & VERIFIED
+
+2. bsdgdydg/frontend:latest
+   Digest: sha256:a61e1b8d65e45383ddb3375c84585a24b2fd445f03bd40a2d57894216031b9b3
+   Platform: linux/amd64
+   Status: PUBLISHED & VERIFIED
+
+3. bsdgdydg/backend:v1
+   Digest: sha256:34f5e3b9ea0a7a372b859343d029b89c7d90bfc40681a87528162a39a931ec41
+   Platform: linux/amd64
+   Status: PUBLISHED & VERIFIED
+
+4. bsdgdydg/backend:latest
+   Digest: sha256:34f5e3b9ea0a7a372b859343d029b89c7d90bfc40681a87528162a39a931ec41
+   Platform: linux/amd64
+   Status: PUBLISHED & VERIFIED

@@ -1,0 +1,28 @@
+=== POSTGRESQL PERSISTENCE VERIFICATION ===
+Volume Name: taskflow-postgres-data
+Target Mount: /var/lib/postgresql/data
+
+Step 1: Insert test record
+INSERT INTO users (name, email, password_hash) VALUES ('Persistence Test', 'persist@test.com', 'hash123') RETURNING id;
+INSERT INTO tasks (user_id, title, description, status) VALUES (3, 'Persistent Task', 'Should survive container recreation', 'Pending') RETURNING *;
+Result: Inserted Task ID 2
+
+Step 2: Destroy PostgreSQL Container
+$ docker compose stop postgres
+Container taskflow-postgres Stopped
+$ docker compose rm -f postgres
+Container taskflow-postgres Removed
+
+Step 3: Recreate PostgreSQL Container using the same named volume
+$ docker compose up -d postgres
+Container taskflow-postgres Created
+Container taskflow-postgres Starting
+Container taskflow-postgres Started
+
+Step 4: Query data after container recreation
+$ docker exec taskflow-postgres psql -U taskflow_user -d taskflow -c "SELECT id, user_id, title, status, created_at FROM tasks WHERE title='Persistent Task';"
+ id | user_id |      title      | status  |          created_at           
+----+---------+-----------------+---------+-------------------------------
+  2 |       3 | Persistent Task | Pending | 2026-11-18 09:42:18.534424+00
+
+Result: SUCCESS. The task record was completely preserved across container deletion and recreation.

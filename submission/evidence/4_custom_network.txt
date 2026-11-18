@@ -1,0 +1,20 @@
+=== CUSTOM DOCKER NETWORK (taskflow-network) ===
+Network Name: taskflow-network
+Driver: bridge
+
+Connected Containers:
+- taskflow-frontend (IP / MAC: 36:1c:6a:d0:44:f3)
+- taskflow-backend  (IP / MAC: 96:76:e6:75:9e:c6)
+- taskflow-postgres (IP / MAC: 0a:f9:40:d9:ac:72)
+- taskflow-redis    (IP / MAC: de:cf:c0:6f:31:5a)
+
+=== INTER-CONTAINER DNS RESOLUTION VERIFICATION ===
+1. Frontend -> Backend reverse proxy:
+   docker exec taskflow-frontend wget -q -O - http://backend:3000/health
+   Response: {"status":"ok","postgres":"ok","redis":"ok"}
+
+2. Backend -> PostgreSQL resolution:
+   PostgreSQL DNS & TCP connection verified on host postgres:5432
+
+3. Backend -> Redis resolution:
+   Redis DNS & TCP connection verified on host redis:6379

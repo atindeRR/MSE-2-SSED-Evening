@@ -1,0 +1,9 @@
+=== HADOLINT FRONTEND DOCKERFILE VALIDATION ===
+Command: Get-Content frontend/Dockerfile | docker run --rm -i hadolint/hadolint
+Exit Code: 0 (No warnings or errors)
+
+=== FRONTEND DOCKER BUILD ===
+Command: docker build -t taskflow-frontend:test ./frontend
+Result: Successfully built frontend using multi-stage build (node:20-slim -> nginx:1.27-alpine)
+Image Size: ~21 MB
+Status: SUCCESS

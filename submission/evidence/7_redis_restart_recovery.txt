@@ -1,0 +1,21 @@
+=== REDIS RESTART AND RECOVERY VERIFICATION ===
+Step 1: Set persistent cache key
+$ docker exec taskflow-redis redis-cli set testkey "redis_restart_ok"
+OK
+
+Step 2: Restart Redis service
+$ docker compose restart redis
+Container taskflow-redis Restarting
+Container taskflow-redis Started
+
+Step 3: Verify Redis health and recovery
+$ docker exec taskflow-redis redis-cli ping
+PONG
+
+$ docker exec taskflow-redis redis-cli get testkey
+redis_restart_ok
+
+$ curl http://localhost:3000/health
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+Result: SUCCESS. Redis restarted smoothly, kept cached data, and the backend reconnected immediately.

@@ -1,0 +1,28 @@
+=== HEALTH CHECK RESPONSES ===
+$ curl http://localhost:3000/health
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+$ curl http://localhost:8080/health
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+=== JEST API TEST SUITE (12/12 PASSED) ===
+PASS ./api.test.js
+  TaskFlow deployed API
+    ✓ TC01: health endpoint confirms API, PostgreSQL and Redis (107 ms)
+    ✓ TC02: register a user (272 ms)
+    ✓ TC03: reject duplicate email (113 ms)
+    ✓ TC04: login and receive token (149 ms)
+    ✓ TC05: reject unauthenticated task request (3 ms)
+    ✓ TC06: create a task (22 ms)
+    ✓ TC07: list tasks and populate cache (14 ms)
+    ✓ TC08: subsequent list can be served from Redis (5 ms)
+    ✓ TC09: update task status and invalidate cache (10 ms)
+    ✓ TC10: reject invalid task status (5 ms)
+    ✓ TC11: delete task (8 ms)
+    ✓ TC12: deleted task is no longer in list (5 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+Snapshots:   0 total
+Time:        30.018 s
+Ran all test suites.

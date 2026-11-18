@@ -1,0 +1,11 @@
+{
+  "name": "Adarsh Dixit",
+  "branch": "CSE AIML",
+  "section": "AIML-A",
+  "github_username": "Adarshdixit80",
+  "dockerhub_username": "bsdgdydg",
+  "repository": "https://github.com/Adarshdixit80/MSE-2-SSED-Evening",
+  "branch_name": "main",
+  "frontend_image": "bsdgdydg/frontend:latest",
+  "backend_image": "bsdgdydg/backend:latest"
+}

@@ -1,0 +1,32 @@
+﻿PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose exec backend getent hosts postgres
+172.18.0.4        postgres  postgres
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose exec backend getent hosts redis
+172.18.0.2        redis  redis
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose logs backend
+backend-1  |     _queryQueue: [],
+backend-1  |     _sentQueryQueue: [],
+backend-1  |     pipeline: false,
+backend-1  |     binary: false,
+backend-1  |     processID: 82,
+backend-1  |     secretKey: 2060865410,
+backend-1  |     ssl: false,
+backend-1  |     sslNegotiation: 'postgres',
+backend-1  |     _connectionTimeoutMillis: 0,
+backend-1  |     _connectionCallback: null,
+backend-1  |     saslSession: null,
+backend-1  |     release: [Function (anonymous)],
+backend-1  |     readyForQuery: true,
+backend-1  |     hasExecuted: true,
+backend-1  |     _poolUseCount: 1,
+backend-1  |     [Symbol(shapeMode)]: false,
+backend-1  |     [Symbol(kCapture)]: false
+backend-1  |   }
+backend-1  | }
+backend-1  | 
+backend-1  | Node.js v20.20.2
+backend-1  | Waiting for PostgreSQL (1/30): the database system is starting up
+backend-1  | PostgreSQL connection established
+backend-1  | Redis connection established
+backend-1  | TaskFlow API listening on 3000

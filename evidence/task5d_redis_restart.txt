@@ -1,0 +1,12 @@
+﻿PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose restart redis
+Container mse-2-ssed-evening-redis-1 Restarted
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose exec redis redis-cli ping
+PONG
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker inspect --format '{{.State.Health.Status}}' mse-2-ssed-evening-redis-1
+healthy
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose ps redis
+NAME                         IMAGE            COMMAND                  SERVICE   CREATED         STATUS                    PORTS
+mse-2-ssed-evening-redis-1   redis:7-alpine   "docker-entrypoint.s…"   redis     6 minutes ago   Up 43 seconds (healthy)   6379/tcp

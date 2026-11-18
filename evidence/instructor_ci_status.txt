@@ -1,0 +1,9 @@
+=== INSTRUCTOR CI STATUS ON PR #30 ===
+Pull Request: https://github.com/atindeRR/MSE-2-SSED-Evening/pull/30
+Title: DOCKER-SET-2 | 202401100400217 | Yash Varshney | C
+Workflow: Docker Practical - CI Evaluation
+Run ID: 44277460533
+Run URL: https://github.com/atindeRR/MSE-2-SSED-Evening/actions/runs/44277460533
+Trigger: pull_request
+Status: action_required (First-time contributor workflow approval required by repository maintainer @atindeRR)
+Note: This is standard GitHub security policy for all external fork pull requests to the upstream repository.

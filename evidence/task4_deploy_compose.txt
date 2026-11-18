@@ -1,0 +1,79 @@
+﻿PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose -f docker-compose.deploy.yml up -d
+ Image yashvarshney005/backend:latest Pulling 
+ Image yashvarshney005/frontend:latest Pulling 
+ cc7d5fabc32d Pulling fs layer 0B
+ ad048a7736ef Pulling fs layer 0B
+ 23d62c832012 Pulling fs layer 0B
+ 80ec768cbe0a Pulling fs layer 0B
+ 24687cb41b88 Pulling fs layer 0B
+ bd7099d2a194 Pulling fs layer 0B
+ d3683e4c02a3 Downloading 1.372kB
+ d3683e4c02a3 Download complete 0B
+ 698a2a63dc7b Download complete 0B
+ cc7d5fabc32d Download complete 0B
+ ad048a7736ef Download complete 0B
+ bd7099d2a194 Download complete 0B
+ ad048a7736ef Extracting 1B
+ bd7099d2a194 Pull complete 0B
+ cc7d5fabc32d Extracting 1B
+ ad048a7736ef Pull complete 0B
+ cc7d5fabc32d Pull complete 0B
+ Image yashvarshney005/frontend:latest Pulled 
+ 23d62c832012 Download complete 0B
+ 80ec768cbe0a Download complete 0B
+ 24687cb41b88 Downloading 1.049MB
+ 24687cb41b88 Download complete 0B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 1B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Extracting 2B
+ 24687cb41b88 Pull complete 0B
+ 23d62c832012 Pull complete 0B
+ 80ec768cbe0a Pull complete 0B
+ Image yashvarshney005/backend:latest Pulled 
+ Network mse-2-ssed-evening_taskflow Creating 
+ Network mse-2-ssed-evening_taskflow Created 
+ Container mse-2-ssed-evening-postgres-1 Creating 
+ Container mse-2-ssed-evening-redis-1 Creating 
+ Container mse-2-ssed-evening-redis-1 Created 
+ Container mse-2-ssed-evening-postgres-1 Created 
+ Container mse-2-ssed-evening-backend-1 Creating 
+ Container mse-2-ssed-evening-backend-1 Created 
+ Container mse-2-ssed-evening-frontend-1 Creating 
+ Container mse-2-ssed-evening-frontend-1 Created 
+ Container mse-2-ssed-evening-redis-1 Starting 
+ Container mse-2-ssed-evening-postgres-1 Starting 
+ Container mse-2-ssed-evening-redis-1 Started 
+ Container mse-2-ssed-evening-postgres-1 Started 
+ Container mse-2-ssed-evening-postgres-1 Waiting 
+ Container mse-2-ssed-evening-redis-1 Waiting 
+ Container mse-2-ssed-evening-redis-1 Healthy 
+ Container mse-2-ssed-evening-postgres-1 Healthy 
+ Container mse-2-ssed-evening-backend-1 Starting 
+ Container mse-2-ssed-evening-backend-1 Started 
+ Container mse-2-ssed-evening-backend-1 Waiting 
+ Container mse-2-ssed-evening-backend-1 Healthy 
+ Container mse-2-ssed-evening-frontend-1 Starting 
+ Container mse-2-ssed-evening-frontend-1 Started 
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker compose -f docker-compose.deploy.yml ps
+NAME                            IMAGE                             COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+mse-2-ssed-evening-backend-1    yashvarshney005/backend:latest    "docker-entrypoint.s…"   backend    38 seconds ago   Up 25 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+mse-2-ssed-evening-frontend-1   yashvarshney005/frontend:latest   "/docker-entrypoint.…"   frontend   38 seconds ago   Up 19 seconds (healthy)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+mse-2-ssed-evening-postgres-1   postgres:16-alpine                "docker-entrypoint.s…"   postgres   39 seconds ago   Up 37 seconds (healthy)   5432/tcp
+mse-2-ssed-evening-redis-1      redis:7-alpine                    "docker-entrypoint.s…"   redis      39 seconds ago   Up 37 seconds (healthy)   6379/tcp

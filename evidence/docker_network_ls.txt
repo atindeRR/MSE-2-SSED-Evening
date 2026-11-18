@@ -1,0 +1,5 @@
+﻿NETWORK ID     NAME                          DRIVER    SCOPE
+f6e4ba070b3f   bridge                        bridge    local
+a4a41b6fa4ec   host                          host      local
+df0876e14e57   mse-2-ssed-evening_taskflow   bridge    local
+76f19259e80b   none                          null      local

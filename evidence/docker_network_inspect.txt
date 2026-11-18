@@ -1,0 +1,86 @@
+﻿PS C:\Users\Yash\MSE-2-SSED-Evening> docker network ls
+NETWORK ID     NAME                          DRIVER    SCOPE
+f6e4ba070b3f   bridge                        bridge    local
+a4a41b6fa4ec   host                          host      local
+83bc9d4b797f   mse-2-ssed-evening_taskflow   bridge    local
+76f19259e80b   none                          null      local
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker network inspect mse-2-ssed-evening_taskflow
+[
+    {
+        "Name": "mse-2-ssed-evening_taskflow",
+        "Id": "83bc9d4b797f9dd93e67a3f7ef1de759099939835c88bfa34f31f0d68b4bab9c",
+        "Created": "2026-11-18T10:20:33.786152384Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv4": true,
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Options": {
+            "com.docker.network.enable_ipv4": "true",
+            "com.docker.network.enable_ipv6": "false"
+        },
+        "Labels": {
+            "com.docker.compose.config-hash": "64bc522a055bfb5657ee8ebc97643d731835484b56504723a0b0cc6678312155",
+            "com.docker.compose.network": "taskflow",
+            "com.docker.compose.project": "mse-2-ssed-evening",
+            "com.docker.compose.version": "5.2.0"
+        },
+        "Containers": {
+            "807ecc0624f7ffe7847e11e73b1bf3e74d7cdd78488668ff6c93cd2acbf720b2": {
+                "Name": "mse-2-ssed-evening-postgres-1",
+                "EndpointID": "d2c6fc1b414e779edc5cfa96c3e379d6184aa775c98497c01791074140249f3e",
+                "MacAddress": "ea:33:cc:95:bc:ac",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "e5cadbdaf075606ff25214e7aeb15988e46b80b67470034c3598c8eec3164f68": {
+                "Name": "mse-2-ssed-evening-backend-1",
+                "EndpointID": "80ccba11cc79f42f73e538dacef97a701b482fbf39f9ea3ed7eeaf4ffba37797",
+                "MacAddress": "c2:5e:55:b9:4f:99",
+                "IPv4Address": "172.18.0.4/16",
+                "IPv6Address": ""
+            },
+            "ecdaa616a116951c1c5fcd686769213fbc3bad2f84cf93f03c1a4b1c26aed4a0": {
+                "Name": "mse-2-ssed-evening-redis-1",
+                "EndpointID": "e1496f658e7b3e70cbbf52dd7bb8870c3c65576fbecde8825bc0ccd21db65fdd",
+                "MacAddress": "ca:95:98:67:2f:df",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            },
+            "ff86eafe6a8ba94b77e1e9db6d0e2055abc6cdc83efdf10d7dcc0a3c12c1acc6": {
+                "Name": "mse-2-ssed-evening-frontend-1",
+                "EndpointID": "ff1dd8339e2be4ac302fbe47d639888599e6f6b7532f1bc085774a99438df68a",
+                "MacAddress": "82:d9:97:e9:fd:b4",
+                "IPv4Address": "172.18.0.5/16",
+                "IPv6Address": ""
+            }
+        },
+        "Status": {
+            "IPAM": {
+                "Subnets": {
+                    "172.18.0.0/16": {
+                        "IPsInUse": 7,
+                        "DynamicIPsAvailable": 65529
+                    }
+                }
+            }
+        }
+    }
+]

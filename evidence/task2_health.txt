@@ -1,0 +1,12 @@
+﻿PS C:\Users\Yash\MSE-2-SSED-Evening> docker ps
+CONTAINER ID   IMAGE                         COMMAND                  CREATED         STATUS                   PORTS                                         NAMES
+ff86eafe6a8b   mse-2-ssed-evening-frontend   "/docker-entrypoint.…"   2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp       mse-2-ssed-evening-frontend-1
+e5cadbdaf075   mse-2-ssed-evening-backend    "docker-entrypoint.s…"   2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   mse-2-ssed-evening-backend-1
+807ecc0624f7   postgres:16-alpine            "docker-entrypoint.s…"   2 minutes ago   Up 2 minutes (healthy)   5432/tcp                                      mse-2-ssed-evening-postgres-1
+ecdaa616a116   redis:7-alpine                "docker-entrypoint.s…"   2 minutes ago   Up 2 minutes (healthy)   6379/tcp                                      mse-2-ssed-evening-redis-1
+
+PS C:\Users\Yash\MSE-2-SSED-Evening> docker inspect health status
+mse-2-ssed-evening-postgres-1 health: healthy
+mse-2-ssed-evening-redis-1 health: healthy
+mse-2-ssed-evening-backend-1 health: healthy
+mse-2-ssed-evening-frontend-1 health: healthy

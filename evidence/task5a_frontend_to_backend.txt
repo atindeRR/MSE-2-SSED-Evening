@@ -1,0 +1,11 @@
+=== GET http://localhost:8080/ (Frontend root) ===
+HTTP 200 OK
+<!doctype html>
+<html lang="en">
+  <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>TaskFlow</title>  <script type="module" crossorigin src=...
+
+=== GET http://localhost:8080/health (Proxied via Nginx) ===
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+=== GET http://localhost:3000/health (Direct Backend) ===
+{"status":"ok","postgres":"ok","redis":"ok"}

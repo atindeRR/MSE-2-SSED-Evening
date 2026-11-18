@@ -1,0 +1,4 @@
+﻿DRIVER    VOLUME NAME
+local     6ab9d1d29543b46fb3a02ed4d690a91bafc18136b0a6eaedf53349cb69b6620f
+local     mse-2-ssed-evening_postgres_data
+local     mse-2-ssed-evening_redis_data

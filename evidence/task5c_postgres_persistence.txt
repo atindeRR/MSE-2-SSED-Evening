@@ -1,0 +1,24 @@
+﻿=== 1. Insert test task into PostgreSQL ===
+INSERT 0 1
+
+=== 2. Query tasks before container destruction ===
+ id | user_id |               title                |  status   |          created_at           
+----+---------+------------------------------------+-----------+-------------------------------
+  5 |       1 | Data Persistence Verification Task | Completed | 2026-11-18 10:25:37.182599+00
+(1 row)
+
+
+=== 3. Force remove only postgres container (docker compose rm -sf postgres) ===
+Going to remove mse-2-ssed-evening-postgres-1
+
+=== 4. Confirm postgres container removed ===
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+
+=== 5. Recreate postgres container (docker compose up -d postgres) ===
+
+=== 6. Query tasks after recreation - proving volume persistence ===
+ id | user_id |               title                |  status   |          created_at           
+----+---------+------------------------------------+-----------+-------------------------------
+  5 |       1 | Data Persistence Verification Task | Completed | 2026-11-18 10:25:37.182599+00
+(1 row)
+

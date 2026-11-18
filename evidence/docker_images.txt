@@ -1,0 +1,6 @@
+﻿IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+hadolint/hadolint:latest          32dac94127fd       67.9MB         12.2MB        
+postgres:16-alpine                81e77a483348        420MB          117MB   U    
+redis:7-alpine                    7f7d30b7fdd0       58.5MB         16.9MB   U    
+yashvarshney005/backend:latest    48818f55fdb1        206MB         49.5MB   U    
+yashvarshney005/frontend:latest   406b6bee84c1       73.8MB           21MB   U    

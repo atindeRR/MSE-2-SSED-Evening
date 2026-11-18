@@ -1,0 +1,12 @@
+﻿=== DOCKER PS ===
+CONTAINER ID   IMAGE                             COMMAND                  CREATED              STATUS                        PORTS                                         NAMES
+a0100af54b52   postgres:16-alpine                "docker-entrypoint.s…"   About a minute ago   Up About a minute (healthy)   5432/tcp                                      mse-2-ssed-evening-postgres-1
+dd0f23058bce   yashvarshney005/frontend:latest   "/docker-entrypoint.…"   6 minutes ago        Up 5 minutes (healthy)        0.0.0.0:8080->80/tcp, [::]:8080->80/tcp       mse-2-ssed-evening-frontend-1
+10abe02d65ef   yashvarshney005/backend:latest    "docker-entrypoint.s…"   6 minutes ago        Up About a minute (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   mse-2-ssed-evening-backend-1
+f0bbd8e99b82   redis:7-alpine                    "docker-entrypoint.s…"   6 minutes ago        Up 37 seconds (healthy)       6379/tcp                                      mse-2-ssed-evening-redis-1
+
+=== HEALTH STATUS INSPECTION ===
+Container: /mse-2-ssed-evening-backend-1 | Status: running | Health: healthy
+Container: /mse-2-ssed-evening-frontend-1 | Status: running | Health: healthy
+Container: /mse-2-ssed-evening-postgres-1 | Status: running | Health: healthy
+Container: /mse-2-ssed-evening-redis-1 | Status: running | Health: healthy

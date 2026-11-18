@@ -1,0 +1,12 @@
+{
+  "name": "Yash Jangid",
+  "roll_number": "202401100400216",
+  "section": "C",
+  "branch": "CSE AIML",
+  "github_username": "YashJangid04",
+  "dockerhub_username": "yashjangid04",
+  "repository_url": "https://github.com/YashJangid04/MSE-2-SSED-Evening",
+  "branch_name": "main",
+  "frontend_image": "yashjangid04/frontend:latest",
+  "backend_image": "yashjangid04/backend:latest"
+}

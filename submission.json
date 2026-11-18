@@ -1,0 +1,10 @@
+{
+  "student_name": "Ayush Patel",
+  "roll_number": "202401100400065",
+  "section": "AIML-A",
+  "github_username": "Er-AyushPatel",
+  "dockerhub_username": "ayushpatel03",
+  "fork_url": "https://github.com/Er-AyushPatel/MSE-2-SSED-Evening",
+  "frontend_image": "ayushpatel03/frontend:latest",
+  "backend_image": "ayushpatel03/backend:latest"
+}

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MSE-2 Practical Examination Report - Set 2 Evening Shift</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 15mm 18mm 15mm;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    line-height: 1.5;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+  }
+  .header-card {
+    border-bottom: 3px solid #2563eb;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: 17pt;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+  }
+  .subtitle {
+    font-size: 11.5pt;
+    color: #475569;
+    font-weight: 500;
+    margin: 0;
+  }
+  h2 {
+    font-size: 12pt;
+    color: #1e3a8a;
+    border-left: 4px solid #2563eb;
+    padding-left: 8px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  h3 {
+    font-size: 10.5pt;
+    color: #334155;
+    margin-top: 12px;
+    margin-bottom: 5px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 9.5pt;
+  }
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+    text-align: left;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+  }
+  .code-block {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 8pt;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin: 6px 0;
+    line-height: 1.35;
+  }
+  .declaration-box {
+    background-color: #f8fafc;
+    border: 2px dashed #94a3b8;
+    border-radius: 6px;
+    padding: 12px;
+    margin-top: 20px;
+    font-style: italic;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-card">
+  <h1>Mid-Semester Examination 2 — Practical Evaluation Report</h1>
+  <p class="subtitle">Software Engineering and DevOps (AI310B) · Set 2 – Evening Shift</p>
+</div>
+
+<h2>A. Student Information</h2>
+<table>
+  <tr><th style="width: 32%;">Full Name</th><td><b>Tanya Yadav</b></td></tr>
+  <tr><th>Roll Number</th><td><b>202401100400197</b></td></tr>
+  <tr><th>Section</th><td><b>C</b></td></tr>
+  <tr><th>Branch / Department</th><td><b>CSEAIML</b></td></tr>
+  <tr><th>GitHub Username</th><td><b>Tanya-yadav-bit</b></td></tr>
+  <tr><th>Docker Hub Username</th><td><b>tanya2807</b></td></tr>
+</table>
+
+<h2>B. Repository and Submission Details</h2>
+<table>
+  <tr><th style="width: 32%;">Original Examination Repository</th><td><a href="https://github.com/atindeRR/MSE-2-SSED-Evening">https://github.com/atindeRR/MSE-2-SSED-Evening</a></td></tr>
+  <tr><th>Personal Fork URL</th><td><a href="https://github.com/Tanya-yadav-bit/MSE-2-SSED-Evening">https://github.com/Tanya-yadav-bit/MSE-2-SSED-Evening</a></td></tr>
+  <tr><th>Personal Implementation Branch</th><td><code>exam/docker-set-2</code></td></tr>
+  <tr><th>Pull Request Target</th><td><code>atindeRR/MSE-2-SSED-Evening:main</code></td></tr>
+  <tr><th>Pull Request Title</th><td><code>DOCKER-SET-2 | 202401100400197 | Tanya Yadav | C</code></td></tr>
+  <tr><th>Docker Hub Frontend Image</th><td><a href="https://hub.docker.com/r/tanya2807/frontend/tags">https://hub.docker.com/r/tanya2807/frontend/tags</a></td></tr>
+  <tr><th>Docker Hub Backend Image</th><td><a href="https://hub.docker.com/r/tanya2807/backend/tags">https://hub.docker.com/r/tanya2807/backend/tags</a></td></tr>
+</table>
+
+<h2>C. Technical Implementation Summary</h2>
+<p>
+This project containerizes and deploys TaskFlow, a full-stack React + Express + PostgreSQL + Redis application with automated multi-stage builds, internal networking, health-based dependency orchestration, data persistence, and an automated continuous deployment workflow.
+</p>
+<ul>
+  <li><b>Task 1 (Dockerfiles):</b> Backend implements Node.js 20 Alpine with production dependencies only and non-root execution (UID 1000). Frontend implements a multi-stage architecture with Node.js 20-slim build stage and Nginx 1.27-alpine runtime with reverse-proxy routing and embedded healthcheck. Both Dockerfiles passed Hadolint with zero warnings.</li>
+  <li><b>Task 2 (Docker Compose):</b> Configured <code>taskflow</code> custom bridge network, PostgreSQL named volume <code>postgres_data</code>, database initialization mount <code>init.sql</code>, and health checks across all four containers.</li>
+  <li><b>Task 3 & 4 (Docker Hub & Deploy Compose):</b> Configured <code>docker-compose.deploy.yml</code> for zero-build image deployment using <code>latest</code> tags.</li>
+  <li><b>Task 5 (Persistence & Health):</b> Verified PostgreSQL persistence by writing test records, removing the container, and recreating it without volume loss. Verified Redis restart and caching.</li>
+  <li><b>Task 6 (GitHub Actions):</b> Automated CD workflow in <code>.github/workflows/cd.yml</code> with build, push, deployment verification, and integration test execution.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>D. Implementation & Verification Evidence</h2>
+
+<h3>1. Docker Compose Services Status (All 4 Services Healthy)</h3>
+<div class="code-block">NAME                            IMAGE                         COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+mse-2-ssed-evening-backend-1    mse-2-ssed-evening-backend    "docker-entrypoint.s…"   backend    39 seconds ago   Up 28 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+mse-2-ssed-evening-frontend-1   mse-2-ssed-evening-frontend   "/docker-entrypoint.…"   frontend   39 seconds ago   Up 22 seconds (healthy)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+mse-2-ssed-evening-postgres-1   postgres:16-alpine            "docker-entrypoint.s…"   postgres   39 seconds ago   Up 38 seconds (healthy)   5432/tcp
+mse-2-ssed-evening-redis-1      redis:7-alpine                "docker-entrypoint.s…"   redis      39 seconds ago   Up 39 seconds (healthy)   6379/tcp</div>
+
+<h3>2. Custom Network Configuration & Health Endpoint Probes</h3>
+<div class="code-block">Network Name: mse-2-ssed-evening_taskflow (Driver: bridge, Subnet: 172.19.0.0/16)
+Containers Attached:
+ - backend-1  (172.19.0.4)
+ - frontend-1 (172.19.0.5)
+ - redis-1    (172.19.0.2)
+ - postgres-1 (172.19.0.3)
+
+Direct Health Probe (http://localhost:3000/health):
+{ "status": "ok", "postgres": "ok", "redis": "ok" }
+
+Nginx Reverse-Proxy Health Probe (http://localhost:8080/health):
+{ "status": "ok", "postgres": "ok", "redis": "ok" }</div>
+
+<h3>3. PostgreSQL Data Persistence & Redis Restart Verification</h3>
+<div class="code-block">=== POSTGRESQL DATA PERSISTENCE VERIFICATION ===
+[BEFORE CONTAINER RECREATION]:
+ id |           title           | status   
+----+---------------------------+---------   
+  2 | Critical Persistence Task | Pending (1 row) 
+
+[ACTION]: Stopped and removed PostgreSQL container (docker compose rm -f postgres)
+[ACTION]: Recreated PostgreSQL container from persistent volume (docker compose up -d postgres)
+
+[AFTER CONTAINER RECREATION]:
+ id |           title           | status   
+----+---------------------------+---------   
+  2 | Critical Persistence Task | Pending (1 row) 
+
+=== REDIS RESTART TEST ===
+Redis restart command: docker compose restart redis
+Redis ping response after restart: PONG</div>
+
+<h3>4. Full Application Integration Test Suite (12/12 Passed)</h3>
+<div class="code-block">PASS ./api.test.js
+  TaskFlow deployed API
+    √ TC01: health endpoint confirms API, PostgreSQL and Redis (43 ms)
+    √ TC02: register a user (129 ms)
+    √ TC03: reject duplicate email (121 ms)
+    √ TC04: login and receive token (86 ms)
+    √ TC05: reject unauthenticated task request (7 ms)
+    √ TC06: create a task (13 ms)
+    √ TC07: list tasks and populate cache (20 ms)
+    √ TC08: subsequent list can be served from Redis (12 ms)
+    √ TC09: update task status and invalidate cache (33 ms)
+    √ TC10: reject invalid task status (13 ms)
+    √ TC11: delete task (14 ms)
+    √ TC12: deleted task is no longer in list (13 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+Snapshots:   0 total
+Time:        1.464 s</div>
+
+<h3>5. Image-Based Deployment Verification (docker-compose.deploy.yml)</h3>
+<div class="code-block">NAME                            IMAGE                           COMMAND                  SERVICE    CREATED              STATUS                    PORTS
+mse-2-ssed-evening-backend-1    tanya2807/backend:latest        "docker-entrypoint.s…"   backend    29 seconds ago       Up 18 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+mse-2-ssed-evening-frontend-1   tanya2807/frontend:latest       "/docker-entrypoint.…"   frontend   29 seconds ago       Up 12 seconds (healthy)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+mse-2-ssed-evening-postgres-1   postgres:16-alpine              "docker-entrypoint.s…"   postgres   About a minute ago   Up 29 seconds (healthy)   5432/tcp
+mse-2-ssed-evening-redis-1      redis:7-alpine                  "docker-entrypoint.s…"   redis      About a minute ago   Up 29 seconds (healthy)   6379/tcp</div>
+
+<h2>E. Mandatory Examination Declaration</h2>
+<div class="declaration-box">
+"I hereby declare that the submitted implementation has been completed by me. I have tested the Docker configurations, Docker Compose deployment, Docker Hub image publishing and GitHub Actions CI/CD pipeline. The screenshots and evidence included in this document represent my actual implementation."
+</div>
+
+<p style="margin-top: 24px;">
+<b>Candidate Name:</b> Tanya Yadav &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Roll Number:</b> 202401100400197<br>
+<b>Section / Branch:</b> C / CSEAIML &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Date:</b> November 18, 2026
+</p>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "studentName": "Ayush Rao Chaudhary",
+  "rollNumber": "2400291530067",
+  "section": "AIML-A",
+  "branch": "CSE (AI & ML)",
+  "githubUsername": "Ask99Ayush",
+  "dockerhubUsername": "Ask99Ayush",
+  "forkRepositoryUrl": "https://github.com/Ask99Ayush/MSE-2-SSED-AIML-A-2400291530067-AYUSH-RAO-CHAUDHARY",
+  "branchName": "main",
+  "dockerHubFrontendImageUrl": "https://hub.docker.com/r/ask99ayush/frontend",
+  "dockerHubBackendImageUrl": "https://hub.docker.com/r/ask99ayush/backend",
+  "pullRequestUrl": "",
+  "workflowRunUrl": ""
+}

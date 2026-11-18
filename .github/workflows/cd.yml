@@ -1,3 +1,4 @@
+
 name: Docker Practical - Publish and Verify
 
 on:
@@ -14,14 +15,15 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish student's images to Docker Hub
+    name: Publish and deploy Docker images
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
-      - name: Checkout student's repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate required Docker Hub secrets
+      - name: Validate Docker Hub secrets
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -61,19 +63,17 @@ jobs:
           cat > .env <<'EOF'
           POSTGRES_DB=taskflow
           POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=deployment_change_me
-          DATABASE_URL=postgresql://taskflow_user:deployment_change_me@postgres:5432/taskflow
+          POSTGRES_PASSWORD=deployment_ci_password
+          DATABASE_URL=postgresql://taskflow_user:deployment_ci_password@postgres:5432/taskflow
           REDIS_URL=redis://redis:6379
-          JWT_SECRET=replace_with_a_long_random_secret
+          JWT_SECRET=deployment_ci_only_secret_change_this
           PORT=3000
-          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
           EOF
 
-      - name: Validate image-based deployment Compose
+      - name: Validate deployment Compose
         run: |
-          grep -q 'image:' docker-compose.deploy.yml
           if grep -Eq '^[[:space:]]+build:' docker-compose.deploy.yml; then
-            echo "Deployment Compose must use published images, not build:"
+            echo "Deployment Compose must use published images, not build."
             exit 1
           fi
           docker compose -f docker-compose.deploy.yml config --quiet
@@ -81,30 +81,44 @@ jobs:
       - name: Pull published images
         run: docker compose -f docker-compose.deploy.yml pull
 
-      - name: Deploy using Docker Hub images
+      - name: Deploy application
         run: docker compose -f docker-compose.deploy.yml up -d
 
-      - name: Verify deployment
+      - name: Verify backend health
         run: |
           for attempt in $(seq 1 40); do
-            if curl --fail --silent http://localhost:3000/health; then
+            if curl --fail --silent http://localhost:3001/health; then
               echo
-              echo "Deployment backend is healthy"
+              echo "Backend is healthy"
               break
             fi
+
             if [ "$attempt" -eq 40 ]; then
               docker compose -f docker-compose.deploy.yml ps
               docker compose -f docker-compose.deploy.yml logs --no-color
               exit 1
             fi
+
             sleep 3
           done
-          curl --fail --silent http://localhost:8080/ > /dev/null
 
-      - name: Run API tests against Docker Hub deployment
+      - name: Verify frontend
+        run: |
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent http://localhost:8082/ > /dev/null; then
+              echo "Frontend is responding"
+              exit 0
+            fi
+            sleep 3
+          done
+
+          docker compose -f docker-compose.deploy.yml logs frontend
+          exit 1
+
+      - name: Run API tests
         working-directory: tests
         env:
-          BASE_URL: http://localhost:3000
+          BASE_URL: http://localhost:3001
           NODE_OPTIONS: --experimental-vm-modules
         run: |
           npm install

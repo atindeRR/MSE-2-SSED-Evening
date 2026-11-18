@@ -14,20 +14,26 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish student's images to Docker Hub
+    name: Build and publish images to Docker Hub
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout student's repository
+      - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Validate required Docker Hub secrets
+      - name: Validate Docker Hub secrets
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
           test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME secret" && exit 1)
           test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN secret" && exit 1)
+
+      - name: Normalize Docker Hub namespace to lowercase
+        id: dockerhub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: echo "namespace=$(printf '%s' "$DOCKERHUB_USERNAME" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -38,35 +44,85 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push backend
+      - name: Build and push backend (all required tags)
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
+            ${{ steps.dockerhub.outputs.namespace }}/backend:latest
+            ${{ steps.dockerhub.outputs.namespace }}/backend:v1
+            ${{ steps.dockerhub.outputs.namespace }}/taskflow-backend:latest
+            ${{ steps.dockerhub.outputs.namespace }}/taskflow-backend:${{ github.sha }}
 
-      - name: Build and push frontend
+      - name: Build and push frontend (all required tags)
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
+            ${{ steps.dockerhub.outputs.namespace }}/frontend:latest
+            ${{ steps.dockerhub.outputs.namespace }}/frontend:v1
+            ${{ steps.dockerhub.outputs.namespace }}/taskflow-frontend:latest
+            ${{ steps.dockerhub.outputs.namespace }}/taskflow-frontend:${{ github.sha }}
+
+      - name: Record published images
+        env:
+          NS: ${{ steps.dockerhub.outputs.namespace }}
+        run: |
+          {
+            echo "## Docker Hub publication"
+            echo ""
+            echo "- Frontend: \`$NS/frontend:v1\`, \`$NS/frontend:latest\`"
+            echo "- Backend: \`$NS/backend:v1\`, \`$NS/backend:latest\`"
+            echo "- Commit: \`$GITHUB_SHA\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Deploy from published images and verify
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Validate deployment secrets
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: test -n "$POSTGRES_PASSWORD" || (echo "Missing POSTGRES_PASSWORD secret" && exit 1)
+
+      - name: Normalize Docker Hub namespace to lowercase
+        id: dockerhub
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: echo "namespace=$(printf '%s' "$DOCKERHUB_USERNAME" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create deployment environment file
+        env:
+          NS: ${{ steps.dockerhub.outputs.namespace }}
+          DB_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          cat > .env <<'EOF'
+          cat > .env <<EOF
           POSTGRES_DB=taskflow
           POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=deployment_change_me
-          DATABASE_URL=postgresql://taskflow_user:deployment_change_me@postgres:5432/taskflow
+          POSTGRES_PASSWORD=$DB_PASSWORD
+          DATABASE_URL=postgresql://taskflow_user:$DB_PASSWORD@postgres:5432/taskflow
           REDIS_URL=redis://redis:6379
-          JWT_SECRET=replace_with_a_long_random_secret
+          JWT_SECRET=ci_run_${RUN_ID}_change_me
           PORT=3000
-          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          FRONTEND_PORT=8080
+          DOCKERHUB_USERNAME=$NS
           EOF
 
       - name: Validate image-based deployment Compose
@@ -81,10 +137,20 @@ jobs:
       - name: Pull published images
         run: docker compose -f docker-compose.deploy.yml pull
 
-      - name: Deploy using Docker Hub images
+      - name: Deploy using published Docker Hub images
         run: docker compose -f docker-compose.deploy.yml up -d
 
-      - name: Verify deployment
+      - name: Verify all services are running
+        run: |
+          sleep 20
+          docker compose -f docker-compose.deploy.yml ps
+          RUNNING=$(docker compose -f docker-compose.deploy.yml ps --status running --format json | jq -r '.Service' | sort | tr '\n' ' ')
+          echo "Running services: $RUNNING"
+          for svc in frontend backend postgres redis; do
+            echo "$RUNNING" | grep -qw "$svc" || { echo "Service $svc is not running"; exit 1; }
+          done
+
+      - name: Verify backend health and frontend response
         run: |
           for attempt in $(seq 1 40); do
             if curl --fail --silent http://localhost:3000/health; then
@@ -100,25 +166,30 @@ jobs:
             sleep 3
           done
           curl --fail --silent http://localhost:8080/ > /dev/null
+          echo "Frontend is responding"
 
-      - name: Run API tests against Docker Hub deployment
+      - name: Run API tests against published-image deployment
         working-directory: tests
         env:
           BASE_URL: http://localhost:3000
           NODE_OPTIONS: --experimental-vm-modules
         run: |
-          npm install
+          npm ci
           npm test
 
-      - name: Record published image references
+      - name: Record deployment verification
         run: |
           {
-            echo "## Docker Hub publication"
+            echo "## Image-based deployment"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Verified services: frontend, backend, postgres, redis"
+            echo "- Source Compose: \`docker-compose.deploy.yml\` (images only, no build)"
+            echo "- Run: \`$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID\`"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Capture logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.deploy.yml logs --no-color || true
 
       - name: Cleanup deployment
         if: always()

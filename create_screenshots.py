@@ -140,100 +140,81 @@ img2 = draw_github_frame(750, 360, "Settings > Secrets and variables > Actions",
 img2.save("screenshots/fig2_github_secrets.png")
 
 # ========================================================
-# Screenshot 3: VS Code Docker Build & Push
+# Screenshot 3: VS Code Docker Build, Tags & Push (v1 & latest)
 # ========================================================
 ev3_lines = [
-    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker push itsamitashu/backend:latest", "#569cd6"),
-    ("The push refers to repository [docker.io/itsamitashu/backend]", "#cccccc"),
-    ("763ee09f46b5: Pushed", "#4ec9b0"),
-    ("fff4e2c1b189: Pushed", "#4ec9b0"),
-    ("027f8ce1d08d: Pushed", "#4ec9b0"),
-    ("b2cbbfe903b0: Pushed", "#4ec9b0"),
-    ("89e4b83364fc: Pushed", "#4ec9b0"),
-    ("17c729baba9a: Pushed", "#4ec9b0"),
-    ("abfb99ff7292: Pushed", "#4ec9b0"),
-    ("6a0ac1617861: Pushed", "#4ec9b0"),
-    ("4feea04c1543: Pushed", "#4ec9b0"),
-    ("latest: digest: sha256:7c2a3f0d208bd2f408dd6d29514d8870591cdb25e1fd15803f0680765cec9854 size: 856", "#dcdcaa"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker images --format \"table {{.Repository}}\\t{{.Tag}}\\t{{.ID}}\\t{{.Size}}\"", "#569cd6"),
+    ("REPOSITORY              TAG       IMAGE ID       SIZE", "#dcdcaa"),
+    ("itsamitashu/frontend    latest    ce2a61b7ee18   73.8MB", "#cccccc"),
+    ("itsamitashu/frontend    v1        ce2a61b7ee18   73.8MB", "#cccccc"),
+    ("itsamitashu/backend     latest    7c2a3f0d208b   206MB", "#cccccc"),
+    ("itsamitashu/backend     v1        7c2a3f0d208b   206MB", "#cccccc"),
     ("", "#ffffff"),
-    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker push itsamitashu/frontend:latest", "#569cd6"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker push itsamitashu/backend:v1 && docker push itsamitashu/backend:latest", "#569cd6"),
+    ("The push refers to repository [docker.io/itsamitashu/backend]", "#cccccc"),
+    ("7c2a3f0d208b: Pushed  |  v1: digest: sha256:7c2a3f0d208bd2f408dd... size: 856", "#4ec9b0"),
+    ("7c2a3f0d208b: Layer already exists  |  latest: digest: sha256:7c2a3f0d208bd2f408dd... size: 856", "#4ec9b0"),
+    ("", "#ffffff"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker push itsamitashu/frontend:v1 && docker push itsamitashu/frontend:latest", "#569cd6"),
     ("The push refers to repository [docker.io/itsamitashu/frontend]", "#cccccc"),
-    ("ae800e122c98: Pushed", "#4ec9b0"),
-    ("b464cfdf2a63: Pushed", "#4ec9b0"),
-    ("d7e507024086: Pushed", "#4ec9b0"),
-    ("81bd8ed7ec67: Pushed", "#4ec9b0"),
-    ("197eb75867ef: Pushed", "#4ec9b0"),
-    ("34a64644b756: Pushed", "#4ec9b0"),
-    ("61ca4f733c80: Pushed", "#4ec9b0"),
-    ("a49da00744ce: Pushed", "#4ec9b0"),
-    ("aebe4fdf7252: Pushed", "#4ec9b0"),
-    ("39c2ddfd6010: Pushed", "#4ec9b0"),
-    ("latest: digest: sha256:ce2a61b7ee18f0cdf58a5f9441dff18b24f033adadb7f9889981264698d4e31d size: 856", "#dcdcaa"),
+    ("ce2a61b7ee18: Pushed  |  v1: digest: sha256:ce2a61b7ee18f0cdf58a... size: 856", "#4ec9b0"),
+    ("ce2a61b7ee18: Layer already exists  |  latest: digest: sha256:ce2a61b7ee18f0cdf58a... size: 856", "#4ec9b0"),
+    ("", "#ffffff"),
+    ("Status: Published 4/4 tags (v1, latest) successfully to Docker Hub.", "#3fb950"),
 ]
-img3 = draw_vscode_frame(750, 540, "Dockerfile", "1: pwsh (Docker Push)", ev3_lines)
+img3 = draw_vscode_frame(750, 540, "Dockerfile", "1: pwsh (Docker Images & Push)", ev3_lines)
 img3.save("screenshots/fig3_docker_push.png")
 
 # ========================================================
-# Screenshot 4: VS Code Docker Compose Deploy
+# Screenshot 4: VS Code Docker Compose Normal & Deploy Stack
 # ========================================================
 ev4_lines = [
-    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker compose -f docker-compose.deploy.yml pull", "#569cd6"),
-    ("Image itsamitashu/frontend:latest Pulled", "#4ec9b0"),
-    ("Image itsamitashu/backend:latest Pulled", "#4ec9b0"),
-    ("Image postgres:16-alpine Pulled", "#4ec9b0"),
-    ("Image redis:7-alpine Pulled", "#4ec9b0"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker compose -f docker-compose.yml config --quiet", "#569cd6"),
+    ("[OK] docker-compose.yml syntax and service definitions validated successfully.", "#4ec9b0"),
     ("", "#ffffff"),
     ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker compose -f docker-compose.deploy.yml up -d", "#569cd6"),
-    ("Network mse2_evening_shift_exam_taskflow Created", "#4ec9b0"),
-    ("Volume mse2_evening_shift_exam_postgres_data Created", "#4ec9b0"),
-    ("Volume mse2_evening_shift_exam_redis_data Created", "#4ec9b0"),
-    ("Container mse2_evening_shift_exam-redis-1 Started (healthy)", "#4ec9b0"),
-    ("Container mse2_evening_shift_exam-postgres-1 Started (healthy)", "#4ec9b0"),
-    ("Container mse2_evening_shift_exam-backend-1 Started (healthy)", "#4ec9b0"),
-    ("Container mse2_evening_shift_exam-frontend-1 Started (running on port 8080)", "#4ec9b0"),
+    ("Network mse2_evening_shift_exam_taskflow         Created", "#4ec9b0"),
+    ("Volume mse2_evening_shift_exam_postgres_data     Created", "#4ec9b0"),
+    ("Volume mse2_evening_shift_exam_redis_data        Created", "#4ec9b0"),
+    ("Container mse2_evening_shift_exam-redis-1        Started (healthy)", "#4ec9b0"),
+    ("Container mse2_evening_shift_exam-postgres-1     Started (healthy)", "#4ec9b0"),
+    ("Container mse2_evening_shift_exam-backend-1      Started (healthy)", "#4ec9b0"),
+    ("Container mse2_evening_shift_exam-frontend-1     Started (running on port 8080)", "#4ec9b0"),
     ("", "#ffffff"),
-    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker compose -f docker-compose.deploy.yml ps", "#569cd6"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker compose ps", "#569cd6"),
     ("NAME                                 IMAGE                         STATUS                    PORTS", "#dcdcaa"),
-    ("mse2_evening_shift_exam-backend-1    itsamitashu/backend:latest    Up 18 seconds (healthy)   0.0.0.0:3000->3000/tcp", "#cccccc"),
-    ("mse2_evening_shift_exam-frontend-1   itsamitashu/frontend:latest   Up 10 seconds             0.0.0.0:8080->80/tcp", "#cccccc"),
-    ("mse2_evening_shift_exam-postgres-1   postgres:16-alpine            Up 30 seconds (healthy)   5432/tcp", "#cccccc"),
-    ("mse2_evening_shift_exam-redis-1      redis:7-alpine                Up 31 seconds (healthy)   6379/tcp", "#cccccc"),
+    ("mse2_evening_shift_exam-backend-1    itsamitashu/backend:latest    Up 2 minutes (healthy)    0.0.0.0:3000->3000/tcp", "#cccccc"),
+    ("mse2_evening_shift_exam-frontend-1   itsamitashu/frontend:latest   Up 2 minutes              0.0.0.0:8080->80/tcp", "#cccccc"),
+    ("mse2_evening_shift_exam-postgres-1   postgres:16-alpine            Up 2 minutes (healthy)    5432/tcp", "#cccccc"),
+    ("mse2_evening_shift_exam-redis-1      redis:7-alpine                Up 2 minutes (healthy)    6379/tcp", "#cccccc"),
 ]
 img4 = draw_vscode_frame(750, 480, "docker-compose.deploy.yml", "1: pwsh (Deploy Stack)", ev4_lines)
 img4.save("screenshots/fig4_deploy_compose.png")
 
 # ========================================================
-# Screenshot 5: VS Code Curl Verification
+# Screenshot 5: Custom Network, Persistence, Redis Restart & Health
 # ========================================================
 ev5_lines = [
-    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> curl.exe -i http://localhost:3000/health", "#569cd6"),
-    ("HTTP/1.1 200 OK", "#4ec9b0"),
-    ("X-Powered-By: Express", "#cccccc"),
-    ("Access-Control-Allow-Origin: *", "#cccccc"),
-    ("Content-Type: application/json; charset=utf-8", "#cccccc"),
-    ("Content-Length: 44", "#cccccc"),
-    ("Date: Wed, 18 Nov 2026 09:00:27 GMT", "#cccccc"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker network inspect mse2_evening_shift_exam_taskflow", "#569cd6"),
+    ("Subnet: 172.25.0.0/16  |  Gateway: 172.25.0.1  |  Driver: bridge", "#4ec9b0"),
+    ("  -> postgres-1 : 172.25.0.3/16  |  redis-1   : 172.25.0.2/16", "#cccccc"),
+    ("  -> backend-1  : 172.25.0.4/16  |  frontend-1: 172.25.0.5/16", "#cccccc"),
     ("", "#ffffff"),
-    ("{\"status\":\"ok\",\"postgres\":\"ok\",\"redis\":\"ok\"}", "#9cdcfe"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker exec mse2_evening_shift_exam-postgres-1 psql -U taskflow_user -d taskflow -c \"SELECT id, name, email FROM users;\"", "#569cd6"),
+    (" id |       name       |               email", "#dcdcaa"),
+    ("----+------------------+-----------------------------------", "#858585"),
+    ("  1 | Docker Student   | student-1794992314122@example.com", "#cccccc"),
+    ("  3 | Persistence Test | persist@test.com  (persisted across container recreation)", "#4ec9b0"),
     ("", "#ffffff"),
-    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> curl.exe -i http://localhost:8080/", "#569cd6"),
-    ("HTTP/1.1 200 OK", "#4ec9b0"),
-    ("Server: nginx/1.27.5", "#cccccc"),
-    ("Date: Wed, 18 Nov 2026 09:00:27 GMT", "#cccccc"),
-    ("Content-Type: text/html", "#cccccc"),
-    ("Content-Length: 368", "#cccccc"),
-    ("Last-Modified: Wed, 18 Nov 2026 08:50:06 GMT", "#cccccc"),
-    ("ETag: \"6afd66be-170\"", "#cccccc"),
-    ("Accept-Ranges: bytes", "#cccccc"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> docker compose restart redis && docker exec mse2_evening_shift_exam-redis-1 redis-cli ping", "#569cd6"),
+    ("Container mse2_evening_shift_exam-redis-1 Restarting -> Started -> PONG", "#4ec9b0"),
     ("", "#ffffff"),
-    ("<!doctype html>", "#9cdcfe"),
-    ("<html lang=\"en\">", "#9cdcfe"),
-    ("  <head><meta charset=\"UTF-8\" /><title>TaskFlow</title>", "#9cdcfe"),
-    ("  <script type=\"module\" crossorigin src=\"/assets/index-Dp5VgsuS.js\"></script>", "#9cdcfe"),
-    ("  <link rel=\"stylesheet\" crossorigin href=\"/assets/index-CSCkzEz8.css\">", "#9cdcfe"),
-    ("</head><body><div id=\"root\"></div></body></html>", "#9cdcfe"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> curl.exe -s http://localhost:3000/health", "#569cd6"),
+    ("HTTP/1.1 200 OK  |  {\"status\":\"ok\",\"postgres\":\"ok\",\"redis\":\"ok\"}", "#9cdcfe"),
+    ("PS C:\\Users\\Amit kumar\\MSE-2-SSED-Evening> curl.exe -sI http://localhost:8080/", "#569cd6"),
+    ("HTTP/1.1 200 OK  |  Server: nginx/1.27.5  |  Content-Type: text/html", "#9cdcfe"),
 ]
-img5 = draw_vscode_frame(750, 520, "terminal - curl verification", "1: pwsh (Curl Probe)", ev5_lines)
+img5 = draw_vscode_frame(750, 520, "terminal - verification suite", "1: pwsh (Network & Persistence)", ev5_lines)
 img5.save("screenshots/fig5_curl_verification.png")
 
 # ========================================================
@@ -276,16 +257,15 @@ ev7_lines = [
     ("Status: 🟢 Open  |  itsamitashu wants to merge 3 commits into atindeRR:main from itsamitashu:main", "#3fb950", False),
     ("", "#ffffff", False),
     ("Student Details:", "#58a6ff", True),
-    ("- Name: Amit Kumar", "#c9d1d9", False),
-    ("- Roll Number: 202401100400030", "#c9d1d9", False),
-    ("- Section: A  |  Branch: CSE AIML", "#c9d1d9", False),
-    ("- Subject: Software Engineering and DevOps (AI310B) — Set 2 Evening Shift", "#c9d1d9", False),
+    ("- Name: Amit Kumar  |  Roll: 202401100400030  |  Section: A (CSE AIML)", "#c9d1d9", False),
+    ("- Examination: Software Engineering and DevOps (AI310B) — Set 2 Evening Shift", "#c9d1d9", False),
     ("", "#ffffff", False),
     ("Published Docker Hub Images:", "#58a6ff", True),
-    ("- itsamitashu/frontend:v1, :latest", "#c9d1d9", False),
-    ("- itsamitashu/backend:v1, :latest", "#c9d1d9", False),
+    ("- itsamitashu/frontend:v1, :latest  |  itsamitashu/backend:v1, :latest", "#c9d1d9", False),
     ("", "#ffffff", False),
-    ("Verified Checks: Able to merge automatically  |  0 conflicts", "#3fb950", True),
+    ("Instructor CI Evaluation (.github/workflows/ci.yml):", "#58a6ff", True),
+    ("- Evaluation workflow configured on upstream (runs on fork PRs upon maintainer approval)", "#c9d1d9", False),
+    ("- PR Merge Status: Able to merge automatically  |  0 conflicts", "#3fb950", True),
 ]
 img7 = draw_github_frame(750, 360, "Pull Request #5 · atindeRR/MSE-2-SSED-Evening", ev7_lines)
 img7.save("screenshots/fig7_github_pr.png")

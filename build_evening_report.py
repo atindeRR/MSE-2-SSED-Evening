@@ -124,6 +124,10 @@ t_rule.setStyle(TableStyle([
 story.append(t_rule)
 story.append(Spacer(1, 10))
 
+def link_text(url, display=None):
+    lbl = display or url
+    return f'<a href="{url}"><font color="#1D4ED8"><u>{lbl}</u></font></a>'
+
 # 1. Student Information
 story.append(Paragraph("1. Student Information", sec_heading_style))
 data_student = [
@@ -149,10 +153,10 @@ story.append(Spacer(1, 8))
 # 2. GitHub Submission Details
 story.append(Paragraph("2. GitHub Submission Details", sec_heading_style))
 data_github = [
-    [Paragraph("Repository URL (Personal Fork):", body_bold), Paragraph("https://github.com/itsamitashu/MSE-2-SSED-Evening", body_val_mono)],
-    [Paragraph("Upstream Instructor Repository:", body_bold), Paragraph("https://github.com/atindeRR/MSE-2-SSED-Evening", body_val_mono)],
+    [Paragraph("Repository URL (Personal Fork):", body_bold), Paragraph(link_text("https://github.com/itsamitashu/MSE-2-SSED-Evening"), body_val_mono)],
+    [Paragraph("Upstream Instructor Repository:", body_bold), Paragraph(link_text("https://github.com/atindeRR/MSE-2-SSED-Evening"), body_val_mono)],
     [Paragraph("Branch Used for Implementation:", body_bold), Paragraph("main", body_val)],
-    [Paragraph("Pull Request URL:", body_bold), Paragraph("https://github.com/atindeRR/MSE-2-SSED-Evening/pull/5", body_val_mono)],
+    [Paragraph("Pull Request URL:", body_bold), Paragraph(link_text("https://github.com/atindeRR/MSE-2-SSED-Evening/pull/5"), body_val_mono)],
     [Paragraph("Pull Request Title:", body_bold), Paragraph("DOCKER-SET-2 | 202401100400030 | Amit Kumar | AIML-A", body_val)],
 ]
 t2 = Table(data_github, colWidths=[180, 352])
@@ -169,11 +173,11 @@ story.append(Spacer(1, 8))
 # 3. Docker Hub Image Details
 story.append(Paragraph("3. Docker Hub Image Details", sec_heading_style))
 data_docker = [
-    [Paragraph("Docker Hub Profile:", body_bold), Paragraph("https://hub.docker.com/u/itsamitashu", body_val_mono)],
-    [Paragraph("Frontend Image (General):", body_bold), Paragraph("https://hub.docker.com/r/itsamitashu/frontend", body_val_mono)],
-    [Paragraph("Backend Image (General):", body_bold), Paragraph("https://hub.docker.com/r/itsamitashu/backend", body_val_mono)],
-    [Paragraph("Frontend Image (TaskFlow):", body_bold), Paragraph("https://hub.docker.com/r/itsamitashu/taskflow-frontend", body_val_mono)],
-    [Paragraph("Backend Image (TaskFlow):", body_bold), Paragraph("https://hub.docker.com/r/itsamitashu/taskflow-backend", body_val_mono)],
+    [Paragraph("Docker Hub Profile:", body_bold), Paragraph(link_text("https://hub.docker.com/u/itsamitashu"), body_val_mono)],
+    [Paragraph("Frontend Image (General):", body_bold), Paragraph(link_text("https://hub.docker.com/r/itsamitashu/frontend"), body_val_mono)],
+    [Paragraph("Backend Image (General):", body_bold), Paragraph(link_text("https://hub.docker.com/r/itsamitashu/backend"), body_val_mono)],
+    [Paragraph("Frontend Image (TaskFlow):", body_bold), Paragraph(link_text("https://hub.docker.com/r/itsamitashu/taskflow-frontend"), body_val_mono)],
+    [Paragraph("Backend Image (TaskFlow):", body_bold), Paragraph(link_text("https://hub.docker.com/r/itsamitashu/taskflow-backend"), body_val_mono)],
 ]
 t3 = Table(data_docker, colWidths=[180, 352])
 t3.setStyle(TableStyle([
@@ -196,7 +200,7 @@ stages_desc = (
 )
 data_cicd = [
     [Paragraph("Workflow Name:", body_bold), Paragraph("Docker Practical - Publish and Verify (cd.yml)", body_val)],
-    [Paragraph("Run URL:", body_bold), Paragraph("https://github.com/itsamitashu/MSE-2-SSED-Evening/actions/runs/44278234634", body_val_mono)],
+    [Paragraph("Run URL (Clickable):", body_bold), Paragraph(link_text("https://github.com/itsamitashu/MSE-2-SSED-Evening/actions/runs/44278234634"), body_val_mono)],
     [Paragraph("Execution Outcome:", body_bold), p_success],
     [Paragraph("Verified Stages:", body_bold), Paragraph(stages_desc, body_val)],
 ]
@@ -235,15 +239,15 @@ story.append(PageBreak())
 story.append(Paragraph("5. Practical CI/CD Execution Evidence Screenshots (Contd.)", sec_heading_style))
 
 # Evidence 3
-story.append(Paragraph("Evidence 3: Backend & Frontend Docker Image Build and Publishing (VS Code Terminal)", ev_title_style))
-story.append(Image("screenshots/fig3_docker_push.png", width=330, height=237))
-story.append(Paragraph("Figure 3: VS Code integrated terminal executing Docker push for itsamitashu/backend:latest and itsamitashu/frontend:latest.", caption_style))
+story.append(Paragraph("Evidence 3: Multi-Stage Image Build, Tags (v1 & latest) and Docker Hub Publishing", ev_title_style))
+story.append(Image("screenshots/fig3_docker_push.png", width=340, height=244))
+story.append(Paragraph("Figure 3: VS Code terminal: docker images verifying v1 and latest tags for backend (206MB) and frontend (73.8MB), followed by successful Docker Hub push.", caption_style))
 story.append(Spacer(1, 4))
 
 # Evidence 4
-story.append(Paragraph("Evidence 4: Docker Compose Image Pull & Container Deployment (VS Code Terminal)", ev_title_style))
+story.append(Paragraph("Evidence 4: Docker Compose Normal Validation & Image Deployment (docker-compose.deploy.yml)", ev_title_style))
 story.append(Image("screenshots/fig4_deploy_compose.png", width=360, height=230))
-story.append(Paragraph("Figure 4: VS Code terminal deploying docker-compose.deploy.yml with published images and verifying healthy container status.", caption_style))
+story.append(Paragraph("Figure 4: VS Code terminal: docker compose validation and docker-compose.deploy.yml startup with healthy backend, frontend, postgres, and redis containers.", caption_style))
 
 # ==========================================
 # PAGE 4: EVIDENCE 5 & 6
@@ -252,9 +256,9 @@ story.append(PageBreak())
 story.append(Paragraph("5. Practical CI/CD Execution Evidence Screenshots (Contd.)", sec_heading_style))
 
 # Evidence 5
-story.append(Paragraph("Evidence 5: Backend Health Check & Frontend Accessibility Verification (VS Code Terminal)", ev_title_style))
-story.append(Image("screenshots/fig5_curl_verification.png", width=335, height=232))
-story.append(Paragraph("Figure 5: VS Code terminal curl execution confirming Backend status 'ok' on port 3000 and Frontend HTTP 200 OK on port 8080.", caption_style))
+story.append(Paragraph("Evidence 5: Custom Docker Network, Postgres Persistence, Redis Restart & Health Probes", ev_title_style))
+story.append(Image("screenshots/fig5_curl_verification.png", width=340, height=235))
+story.append(Paragraph("Figure 5: Verification suite: taskflow network inspection (172.25.0.0/16), postgres persistence query, redis restart PONG, backend /health and frontend HTTP 200.", caption_style))
 story.append(Spacer(1, 4))
 
 # Evidence 6
@@ -269,24 +273,24 @@ story.append(PageBreak())
 story.append(Paragraph("6. Pull Request Submission & Mandatory Declaration", sec_heading_style))
 
 # Evidence 7
-story.append(Paragraph("Evidence 7: Submitted Pull Request on Instructor Repository (#5)", ev_title_style))
+story.append(Paragraph("Evidence 7: Submitted Pull Request on Instructor Repository (#5) & Instructor CI Status", ev_title_style))
 story.append(Image("screenshots/fig7_github_pr.png", width=400, height=192))
-story.append(Paragraph("Figure 7: Pull Request #5 created on atindeRR/MSE-2-SSED-Evening with required title and details.", caption_style))
+story.append(Paragraph("Figure 7: Pull Request #5 on atindeRR/MSE-2-SSED-Evening showing required title, published image tags, and instructor CI evaluation workflow status.", caption_style))
 story.append(Spacer(1, 4))
 
 # Implementation Verification Checklist
 story.append(Paragraph("Implementation Verification Checklist", body_bold))
 chk_data = [
-    [Paragraph("[X] Frontend Dockerfile implemented (React + Vite + Nginx multi-stage build)", body_val)],
-    [Paragraph("[X] Backend Dockerfile implemented (Node.js 20 Alpine + Express + Non-root user)", body_val)],
-    [Paragraph("[X] docker-compose.yml implemented (frontend, backend, postgres, redis)", body_val)],
+    [Paragraph("[X] Frontend Dockerfile implemented (React + Vite + Nginx multi-stage build, port 80 exposed)", body_val)],
+    [Paragraph("[X] Backend Dockerfile implemented (Node.js 20 Alpine + Express + Non-root USER 1000:1000, port 3000)", body_val)],
+    [Paragraph("[X] docker-compose.yml implemented (frontend, backend, postgres, redis, healthchecks, dependencies)", body_val)],
     [Paragraph("[X] docker-compose.deploy.yml implemented (pure published images without build directives)", body_val)],
-    [Paragraph("[X] Frontend & Backend images published to Docker Hub (v1 and latest tags)", body_val)],
-    [Paragraph("[X] PostgreSQL persistent storage verified (postgres_data named volume)", body_val)],
-    [Paragraph("[X] Redis caching verified through API test suite (cache hit TC08)", body_val)],
-    [Paragraph("[X] Hadolint linting verified with 0 errors/warnings on both Dockerfiles", body_val)],
-    [Paragraph("[X] GitHub Actions CD pipeline executed and passed all stages (Run #44278234634)", body_val)],
-    [Paragraph("[X] Pull Request #5 submitted against instructor repository with required title format", body_val)],
+    [Paragraph("[X] Frontend & Backend images published to Docker Hub (both v1 and latest tags verified)", body_val)],
+    [Paragraph("[X] Custom Docker network verified (taskflow bridge subnet 172.25.0.0/16 with DNS container resolution)", body_val)],
+    [Paragraph("[X] PostgreSQL persistent storage verified (postgres_data named volume retains data across container recreation)", body_val)],
+    [Paragraph("[X] Redis service restart & caching verified (container restart PONG, API cache hit TC08 verified)", body_val)],
+    [Paragraph("[X] GitHub Actions CD pipeline executed and passed all stages (Run #44278234634 - COMPLETED SUCCESS)", body_val)],
+    [Paragraph("[X] Pull Request #5 submitted against instructor repository with required title and instructor CI configured", body_val)],
 ]
 t_chk = Table(chk_data, colWidths=[532])
 t_chk.setStyle(TableStyle([

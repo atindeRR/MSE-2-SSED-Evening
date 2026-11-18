@@ -1,0 +1,7 @@
+Docker Hub public repository and tag verification
+Repository: frontend; private: False; owner: gauridhingra
+Tag: latest; digest: sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63; status: active
+Tag: v1; digest: sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63; status: active
+Repository: backend; private: False; owner: gauridhingra
+Tag: latest; digest: sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233; status: active
+Tag: v1; digest: sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233; status: active

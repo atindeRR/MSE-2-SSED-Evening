@@ -1,0 +1,13 @@
+Image-based deployment custom-network and service-health verification
+Service | Image | State | Health
+backend|sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233|running|healthy
+frontend|sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63|running|healthy
+postgres|postgres:16-alpine|running|healthy
+redis|redis:7-alpine|running|healthy
+Backend DNS lookup for Compose services:
+postgres 172.21.0.3
+redis 172.21.0.2
+Frontend HTTP status: 200
+Frontend proxy health: {"status":"ok","postgres":"ok","redis":"ok"}
+Backend health: {"status":"ok","postgres":"ok","redis":"ok"}
+taskflow-deploy-network bridge

@@ -1,0 +1,12 @@
+PostgreSQL volume persistence and Redis recovery verification (image-only deployment)
+Before PostgreSQL container recreation: persistence@example.test
+PostgreSQL health after recreation: healthy
+After PostgreSQL container recreation: persistence@example.test
+Redis health after restart: healthy
+Backend health after restarts: healthy
+Backend API health: {"status":"ok","postgres":"ok","redis":"ok"}
+Final service | State | Health
+backend|running|healthy
+frontend|running|healthy
+postgres|running|healthy
+redis|running|healthy

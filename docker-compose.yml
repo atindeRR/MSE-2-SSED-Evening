@@ -1,0 +1,89 @@
+# ── docker-compose.yml ───────────────────────────────────────────────
+# Builds images locally and runs the full stack:
+#   frontend  → Nginx (port 8080)
+#   backend   → Node.js Express (port 3000)
+#   postgres  → PostgreSQL 16 (internal only)
+#   redis     → Redis 7 (internal only)
+
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB}
+      POSTGRES_USER:     ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  # ── Redis ─────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # ── Backend ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL:    ${REDIS_URL}
+      JWT_SECRET:   ${JWT_SECRET}
+      PORT:         ${PORT:-3000}
+    ports:
+      - "3000:3000"
+    networks:
+      - app_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+  # ── Frontend ──────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:80"
+    networks:
+      - app_network
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+# ── Named volumes ─────────────────────────────────────────────────
+volumes:
+  postgres_data:
+
+# ── Custom network ────────────────────────────────────────────────
+networks:
+  app_network:
+    driver: bridge

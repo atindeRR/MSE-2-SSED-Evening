@@ -337,4 +337,45 @@ Before submitting, verify the following:
 - [ ] PDF uploaded to Moodle.
 - [ ] PDF attached to the GitHub Pull Request.
 
+
+---
+
+## Implementation Notes (Student Submission)
+
+**Stack:** React (Vite) served by Nginx, Express API, PostgreSQL 16, Redis 7.
+
+### Run locally (build from source)
+1. `Copy-Item .env.example .env`, then set `POSTGRES_PASSWORD` (letters/digits only) and `JWT_SECRET`.
+2. `docker compose build`
+3. `docker compose up -d`
+4. App: http://localhost:8080 , API health: http://localhost:3000/health
+
+### Publish images
+```powershell
+$DU = "avinashsh3006"
+docker build -t "${DU}/frontend:v1" -t "${DU}/frontend:latest" ./frontend
+docker build -t "${DU}/backend:v1" -t "${DU}/backend:latest" ./backend
+docker push "${DU}/frontend:v1"; docker push "${DU}/frontend:latest"
+docker push "${DU}/backend:v1"; docker push "${DU}/backend:latest"
+```
+
+### Deploy from Docker Hub images
+Set `DOCKERHUB_USERNAME`, `POSTGRES_PASSWORD`, `JWT_SECRET` in `.env`, then:
+`docker compose -f docker-compose.deploy.yml up -d`
+
+### Design
+- Frontend: multi-stage build (node build stage, nginx runtime). Nginx proxies `/api/` and `/health` to `backend:3000`.
+- Backend: `node:22-alpine`, production dependencies only, non-root user.
+- All services share the `taskflow-net` network. Postgres and Redis publish no host ports.
+- PostgreSQL data lives in the named volume `postgres_data`; `backend/db/init.sql` initialises the schema.
+- Health checks: `pg_isready` (Postgres), `redis-cli ping` (Redis), `/health` (backend).
+
+### CI/CD
+`.github/workflows/cd.yml` runs on push to `main`: build, tag (`v1`, `latest`), push, then pull and deploy via `docker-compose.deploy.yml` and verify. Required secrets: `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `POSTGRES_PASSWORD`. The deployment runs on a temporary GitHub runner for verification only, not on a persistent server.
+
+### Troubleshooting
+- `Set POSTGRES_PASSWORD`: create `.env` from `.env.example`.
+- Login fails after changing the password: the volume keeps the old one; run `docker compose down -v`.
+- Port 3000/8080 busy: stop the other stack with `docker compose down`.
+
 **Good Luck!**

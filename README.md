@@ -141,7 +141,7 @@ This file must deploy the application using the images published on Docker Hub.
 Requirements:
 
 - Use the published frontend and backend Docker Hub images.
-- Use the `latest` tag for deployment.
+- Use the published `v1` tags for this deployment.
 - Do not use `build:` for frontend and backend services.
 - Use official PostgreSQL and Redis images.
 - Configure the custom network.
@@ -172,13 +172,18 @@ You must capture screenshots or terminal outputs demonstrating these tests.
 
 ### Task 6: GitHub Actions CI/CD Pipeline
 
-Create a GitHub Actions workflow:
+The CI and CD workflows are:
 
 ```text
+.github/workflows/ci.yml
 .github/workflows/cd.yml
 ```
 
-The workflow must execute automatically whenever code is pushed to the `main` branch.
+CI runs on pushes and pull requests targeting `main` (and can be run manually).
+CD runs on pushes to `main` (and can be run manually). The CD workflow publishes
+the `itygaur23/frontend` and `itygaur23/backend` images with `v1` and `latest`
+tags, then deploys the `v1` images using `docker-compose.deploy.yml` on port
+`8082`.
 
 Your pipeline must perform the following stages:
 
@@ -338,3 +343,51 @@ Before submitting, verify the following:
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**
+
+## Local Docker Compose
+
+Copy `.env.example` to `.env` and replace the example database password and JWT
+secret with values you choose. Keep `DATABASE_URL` consistent with the
+PostgreSQL username, password, database, and `postgres` service hostname.
+
+```bash
+docker compose up --build -d
+docker compose ps
+docker compose logs -f
+```
+
+The React/Nginx frontend is available at `http://localhost:8081` with the
+sample environment file; `FRONTEND_PORT` controls the host port, and defaults
+to `8080` when unset (as used by CI). The API health endpoint is available at
+`http://localhost:3000/health`. PostgreSQL and Redis are reachable by the
+backend on the private `taskflow-network` network as `postgres:5432` and
+`redis:6379`. PostgreSQL data is stored in the `postgres_data` named volume,
+and `backend/db/init.sql` initializes a new database volume. Stop the services
+with `docker compose down`; keep the volume to preserve database data.
+`docker compose down -v` also removes the data.
+
+## Image-based deployment
+
+The deployment file uses `itygaur23/frontend:v1` and `itygaur23/backend:v1`;
+it does not build frontend or backend images. The `latest` tags are also
+published, but this deployment Compose file intentionally pins `v1`. Create
+`.env` from `.env.example` only if it does not already exist, then replace the
+example database password and JWT secret with private values. Keep
+`DATABASE_URL` consistent with the database credentials.
+`DEPLOY_FRONTEND_PORT` is configurable and defaults to `8082`.
+
+In PowerShell, from the repository root:
+
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+docker compose --project-name taskflow-image-deploy --env-file .env -f docker-compose.deploy.yml config --quiet
+docker compose --project-name taskflow-image-deploy --env-file .env -f docker-compose.deploy.yml pull
+docker compose --project-name taskflow-image-deploy --env-file .env -f docker-compose.deploy.yml up -d
+docker compose --project-name taskflow-image-deploy --env-file .env -f docker-compose.deploy.yml ps
+```
+
+The frontend is available at `http://localhost:8082` by default, and
+`http://localhost:8082/health` verifies the Nginx proxy to the backend health
+endpoint. PostgreSQL and Redis are available only inside the deployment
+network. The deployment project has its own network and PostgreSQL volume,
+separate from the local Compose project.

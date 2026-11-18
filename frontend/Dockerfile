@@ -27,5 +27,6 @@ RUN mkdir -p /var/cache/nginx/client_temp /var/cache/nginx/proxy_temp \
     && sed -i 's|/run/nginx.pid|/tmp/nginx.pid|' /etc/nginx/nginx.conf
 
 EXPOSE 80
-USER nginx
+# Numeric UID/GID 101 = nginx in nginx:1.27-alpine (also keeps hadolint DL3066 clean).
+USER 101:101
 CMD ["nginx", "-g", "daemon off;"]

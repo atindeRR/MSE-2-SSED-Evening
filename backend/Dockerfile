@@ -12,10 +12,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY --chown=node:node package.json ./
-COPY --chown=node:node src ./src
-COPY --chown=node:node db ./db
+COPY --chown=1000:1000 package.json ./
+COPY --chown=1000:1000 src ./src
+COPY --chown=1000:1000 db ./db
 
-USER node
+# Numeric UID/GID 1000 = node in node:20-alpine (also keeps hadolint DL3066 clean).
+USER 1000:1000
 EXPOSE 3000
 CMD ["node", "src/server.js"]

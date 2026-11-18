@@ -1,0 +1,19 @@
+{
+  "name": "Akshat Gupta",
+  "rollNumber": "202401100400023",
+  "section": "A",
+  "branch": "CSE(AIML)",
+  "githubUsername": "akshat-xcode",
+  "dockerhubUsername": "akshat181818",
+  "set": "Set 2 - Evening Shift",
+  "images": {
+    "frontend": [
+      "akshat181818/frontend:v1",
+      "akshat181818/frontend:latest"
+    ],
+    "backend": [
+      "akshat181818/backend:v1",
+      "akshat181818/backend:latest"
+    ]
+  }
+}

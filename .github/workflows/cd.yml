@@ -1,3 +1,4 @@
+
 name: Docker Practical - Publish and Verify
 
 on:
@@ -17,6 +18,7 @@ jobs:
     name: Publish student's images to Docker Hub
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
       - name: Checkout student's repository
         uses: actions/checkout@v4
@@ -44,8 +46,8 @@ jobs:
           context: ./backend
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v6
@@ -53,8 +55,8 @@ jobs:
           context: ./frontend
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
 
       - name: Create deployment environment file
         run: |
@@ -115,9 +117,11 @@ jobs:
           {
             echo "## Docker Hub publication"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Backend: `${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:v1`"
+            echo "- Backend: `${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest`"
+            echo "- Frontend: `${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:v1`"
+            echo "- Frontend: `${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest`"
+            echo "- Commit: `${GITHUB_SHA}`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup deployment

@@ -147,24 +147,24 @@ jobs:
 
       - name: Verify all services are running and healthy
         run: |
-          for attempt in $(seq 1 40); do
-            if curl --fail --silent http://localhost:3000/health > /dev/null; then
-              echo "Backend API is healthy"
-              break
-            fi
-            if [ "$attempt" -eq 40 ]; then
-              echo "Backend never became healthy"
-              exit 1
-            fi
-            sleep 3
+          for service in postgres redis backend frontend; do
+            for attempt in $(seq 1 40); do
+              status="$(docker inspect --format '{{.State.Health.Status}}' "taskflow-deploy-$service")"
+              if [ "$status" = "healthy" ]; then
+                echo "$service health: $status"
+                break
+              fi
+              if [ "$attempt" -eq 40 ]; then
+                echo "$service did not become healthy (status: $status)"
+                exit 1
+              fi
+              sleep 3
+            done
           done
+          curl --fail --silent http://localhost:3000/health > /dev/null || { echo "Backend API did not respond"; exit 1; }
+          echo "Backend API is healthy"
           curl --fail --silent http://localhost:8080/ > /dev/null || { echo "Frontend did not respond"; exit 1; }
           echo "Frontend is responding"
-          for service in frontend backend postgres redis; do
-            status="$(docker inspect --format '{{.State.Health.Status}}' "taskflow-deploy-$service")"
-            echo "$service health: $status"
-            test "$status" = "healthy" || exit 1
-          done
           docker compose -f docker-compose.deploy.yml ps
 
       - name: Run API tests against published-image deployment

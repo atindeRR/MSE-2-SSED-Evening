@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MSE-2 Practical Examination Documentation</title>
+  <style>
+    @page { margin: 18mm 15mm; size: A4; }
+    body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.5; font-size: 13px; margin: 0; }
+    h1 { color: #0f172a; font-size: 20px; border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-top: 0; }
+    h2 { color: #1e40af; font-size: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 18px; }
+    h3 { color: #334155; font-size: 13px; margin-top: 12px; margin-bottom: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12px; }
+    th, td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; }
+    th { background: #f1f5f9; color: #0f172a; font-weight: 600; width: 30%; }
+    .badge { display: inline-block; background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: 600; font-size: 11px; }
+    .code-box { background: #0f172a; color: #f8fafc; padding: 10px; border-radius: 6px; font-family: Consolas, monospace; font-size: 11px; margin: 8px 0; white-space: pre-wrap; }
+    .placeholder-box { background: #f8fafc; border: 2px dashed #94a3b8; border-radius: 8px; padding: 16px; text-align: center; color: #64748b; font-size: 12px; margin: 10px 0; }
+    .declaration { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 12px 16px; border-radius: 0 6px 6px 0; margin-top: 16px; font-style: italic; color: #166534; }
+    .footer { margin-top: 25px; display: flex; justify-content: space-between; font-weight: 600; }
+    .page-break { page-break-after: always; }
+  </style>
+</head>
+<body>
+
+  <h1>KIET Group of Institutions</h1>
+  <p><strong>Department of Computer Science & Engineering (AIML)</strong><br>
+  Software Engineering and DevOps (AI310B) — Mid-Semester Examination 2 (Set 2 – Evening Shift)</p>
+
+  <h2>A. Student Information</h2>
+  <table>
+    <tr><th>Student Name</th><td>Bhavya Arora</td></tr>
+    <tr><th>Roll Number</th><td>[ENTER_YOUR_COLLEGE_ROLL_NUMBER]</td></tr>
+    <tr><th>Section</th><td>[ENTER_YOUR_SECTION]</td></tr>
+    <tr><th>Course / Branch</th><td>BTech CSE AI&ML</td></tr>
+    <tr><th>Institution</th><td>KIET Group of Institutions</td></tr>
+    <tr><th>GitHub Username</th><td>Bhavya-AroraID</td></tr>
+    <tr><th>Docker Hub Username</th><td>bhavya2718</td></tr>
+  </table>
+
+  <h2>B. Repository and Submission Details</h2>
+  <table>
+    <tr><th>Forked Repository URL</th><td><a href="https://github.com/Bhavya-AroraID/MSE-2-SSED-Evening">https://github.com/Bhavya-AroraID/MSE-2-SSED-Evening</a></td></tr>
+    <tr><th>Target Examination URL</th><td><a href="https://github.com/atindeRR/MSE-2-SSED-Evening">https://github.com/atindeRR/MSE-2-SSED-Evening</a></td></tr>
+    <tr><th>Pull Request URL</th><td><a href="https://github.com/atindeRR/MSE-2-SSED-Evening/pull/167">https://github.com/atindeRR/MSE-2-SSED-Evening/pull/167</a></td></tr>
+    <tr><th>Target Branch</th><td>main</td></tr>
+    <tr><th>Docker Hub Frontend Image</th><td><a href="https://hub.docker.com/r/bhavya2718/frontend">https://hub.docker.com/r/bhavya2718/frontend</a></td></tr>
+    <tr><th>Docker Hub Backend Image</th><td><a href="https://hub.docker.com/r/bhavya2718/backend">https://hub.docker.com/r/bhavya2718/backend</a></td></tr>
+    <tr><th>GitHub Actions Workflow URL</th><td><a href="https://github.com/Bhavya-AroraID/MSE-2-SSED-Evening/actions">https://github.com/Bhavya-AroraID/MSE-2-SSED-Evening/actions</a></td></tr>
+  </table>
+
+  <h2>C. Technical Architecture & Implementation Summary</h2>
+  <ul>
+    <li><strong>Frontend Containerization:</strong> Implemented multi-stage Docker build with <code>node:20-slim</code> build stage to compile React assets with Vite, and <code>nginx:1.27-alpine</code> production stage reverse-proxying API traffic to <code>http://backend:3000</code>.</li>
+    <li><strong>Backend Containerization:</strong> Multi-stage build with <code>node:20-alpine</code>, strict production dependency installation (<code>--omit=dev</code>), running securely as non-root user <code>USER node</code> on port 3000.</li>
+    <li><strong>Local Compose (<code>docker-compose.yml</code>):</strong> Orchestrates frontend, backend, postgres, and redis services over a custom bridge network (<code>taskflow</code>) with persistent database volume (<code>postgres_data</code>) and health dependencies.</li>
+    <li><strong>Image-Based Deployment (<code>docker-compose.deploy.yml</code>):</strong> Pure image deployment using published Docker Hub images (<code>bhavya2718/backend:latest</code> and <code>bhavya2718/frontend:latest</code>) with zero local build directives.</li>
+    <li><strong>CI/CD Workflow (<code>.github/workflows/cd.yml</code>):</strong> Automated GitHub Actions workflow on <code>main</code> push that builds, tags (<code>v1</code> & <code>latest</code>), pushes 4 image tags to Docker Hub, deploys stack on runner, and executes all 12 API tests.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <h2>D. Implementation Evidence & Test Verification</h2>
+
+  <h3>1. Frontend & Backend Docker Image Build</h3>
+  <div class="code-box">
+[+] Building frontend (node:20-slim -> vite build -> nginx:1.27-alpine)
+=> [build 5/5] RUN npm run build: Built in 596ms (dist generated)
+=> [production 2/3] COPY --from=build /app/dist /usr/share/nginx/html
+[+] Building backend (node:20-alpine -> npm install --omit=dev)
+=> Backend packaged as non-root (USER node) with production dependencies
+  </div>
+  <div class="placeholder-box">
+    [Insert Screenshot 1: Docker image build or GitHub Actions Build Stage]
+  </div>
+
+  <h3>2. Docker Compose Running Services & Network Isolation</h3>
+  <div class="code-box">
+NAME                            IMAGE                        STATUS                   PORTS
+mse-2-ssed-evening-backend-1    bhavya2718/backend:latest    Up (healthy)             0.0.0.0:3000->3000/tcp
+mse-2-ssed-evening-frontend-1   bhavya2718/frontend:latest   Up (healthy)             0.0.0.0:8080->80/tcp
+mse-2-ssed-evening-postgres-1   postgres:16-alpine           Up (healthy)             5432/tcp
+mse-2-ssed-evening-redis-1      redis:7-alpine               Up (healthy)             6379/tcp
+  </div>
+  <div class="placeholder-box">
+    [Insert Screenshot 2: docker compose ps showing all 4 services healthy]
+  </div>
+
+  <h3>3. Health Checks & Database Persistence</h3>
+  <div class="code-box">
+$ curl -s http://localhost:3000/health
+{"status":"ok","postgres":"ok","redis":"ok"}
+
+$ curl -I http://localhost:8080/
+HTTP/1.1 200 OK
+Server: nginx/1.27.4
+  </div>
+  <div class="placeholder-box">
+    [Insert Screenshot 3: Backend /health and Frontend HTTP 200 responses]
+  </div>
+
+  <h3>4. Docker Hub Image Publication (v1 and latest tags)</h3>
+  <div class="placeholder-box">
+    [Insert Screenshot 4: Docker Hub repositories for bhavya2718/frontend and bhavya2718/backend showing v1 & latest tags]
+  </div>
+
+  <h3>5. GitHub Actions Workflow Execution</h3>
+  <div class="placeholder-box">
+    [Insert Screenshot 5: GitHub Actions 'Docker Practical - Publish and Verify' completed run with all steps green]
+  </div>
+
+  <h3>6. Instructor CI Evaluation on Pull Request</h3>
+  <div class="placeholder-box">
+    [Insert Screenshot 6: Pull Request status showing instructor evaluation workflow checks passed]
+  </div>
+
+  <h2>E. Student Declaration</h2>
+  <div class="declaration">
+    "I hereby declare that the submitted implementation has been completed by me. I have tested the Docker configurations, Docker Compose deployment, Docker Hub image publishing and GitHub Actions CI/CD pipeline. The screenshots and evidence included in this document represent my actual implementation."
+  </div>
+
+  <div class="footer">
+    <div>Candidate Name: Bhavya Arora</div>
+    <div>Date: November 18, 2026</div>
+  </div>
+
+</body>
+</html>

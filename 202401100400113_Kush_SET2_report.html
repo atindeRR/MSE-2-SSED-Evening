@@ -1,0 +1,55 @@
+<!doctype html><html><head><meta charset="utf-8"><title>MSE-2 Set 2 Practical Report</title><style>body{font-family:Arial,sans-serif;margin:35px;color:#1f2937}h1,h2{color:#1d4ed8}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left}th{background:#eff6ff}.ok{color:#15803d;font-weight:bold}.missing{color:#b45309}.box{border-left:4px solid #2563eb;padding:10px;background:#f8fafc}pre{white-space:pre-wrap;background:#f1f5f9;padding:12px;border:1px solid #cbd5e1;font-size:10pt}.declaration{margin-top:35px;border:2px solid #334155;padding:18px}img{max-width:100%;border:1px solid #94a3b8}</style></head><body>
+<h1>Mid-Semester Examination – 2<br>Software Engineering and DevOps | Set 2 – Evening Shift</h1>
+<h2>Student and Repository Details</h2>
+<table><tr><th>Student Name</th><td>Kush</td></tr><tr><th>Roll Number</th><td>202401100400113</td></tr><tr><th>Section</th><td>B</td></tr><tr><th>Branch</th><td>AIML</td></tr><tr><th>GitHub Username</th><td>kush1246</td></tr><tr><th>Docker Hub Username</th><td>kushagra215</td></tr><tr><th>Working branch</th><td>docker-set-2/202401100400113-kush-b</td></tr><tr><th>Fork repository</th><td>https://github.com/kush1246/MSE-2-SSED-Evening</td></tr><tr><th>Original repository</th><td>https://github.com/atindeRR/MSE-2-SSED-Evening</td></tr></table>
+<h2>Docker Hub Images</h2>
+<ul><li>https://hub.docker.com/r/kushagra215/frontend</li><li>https://hub.docker.com/r/kushagra215/backend</li><li><code>kushagra215/frontend:v1</code> and <code>kushagra215/frontend:latest</code></li><li><code>kushagra215/backend:v1</code> and <code>kushagra215/backend:latest</code></li></ul>
+<h2>Implementation Summary</h2>
+<p>The existing React/Vite frontend and Express/Node.js backend were preserved. Multi-stage frontend and production backend Dockerfiles were created. Docker Compose provides PostgreSQL 16, Redis 7, a custom bridge network, PostgreSQL and Redis named volumes, health checks and health-based dependencies. The image deployment uses only Docker Hub application images.</p>
+<h2>Frontend Application — Genuine Local Capture</h2>
+<img src="taskflow-browser.png" alt="TaskFlow frontend"><p>This is a genuine browser capture of the running deployed frontend.</p>
+<h2>Verified Docker Compose Status</h2>
+<pre>NAME                         IMAGE                         STATUS                    PORTS
+ taskflow-deploy-backend-1    kushagra215/backend:latest    Up (healthy)              0.0.0.0:3000-&gt;3000/tcp
+ taskflow-deploy-frontend-1   kushagra215/frontend:latest   Up (healthy)              0.0.0.0:8080-&gt;80/tcp
+ taskflow-deploy-postgres-1   postgres:16-alpine            Up (healthy)              5432/tcp
+ taskflow-deploy-redis-1      redis:7-alpine                Up (healthy)              6379/tcp</pre>
+<h2>Health Check and API Evidence</h2>
+<pre>{"status":"ok","postgres":"ok","redis":"ok"}</pre>
+<p class="ok">Frontend HTTP response: 200 OK</p><p class="ok">PostgreSQL health: healthy</p><p class="ok">Redis health: healthy</p><p class="ok">Backend health: healthy</p>
+<h2>Persistence Evidence</h2>
+<pre>PostgreSQL row after container recreation:
+ id |         title         |       description       | status
+  2 | Persisted Docker Task | Volume recreation proof | Pending</pre>
+<p>The PostgreSQL container was removed and recreated while the named volume remained attached. The row was returned afterward.</p>
+<h2>Redis Restart Evidence</h2>
+<pre>docker compose exec redis redis-cli ping
+PONG</pre>
+<h2>API Test Evidence</h2>
+<pre>Test Suites: 1 passed
+Tests:       12 passed
+TC01–TC12 all passed against the image-based Docker Hub deployment.</pre>
+<h2>Docker Hub Publishing Evidence</h2>
+<pre>The Docker CLI successfully pushed:
+ kushagra215/frontend:v1
+ kushagra215/frontend:latest
+ kushagra215/backend:v1
+ kushagra215/backend:latest</pre>
+<h2>Image-Based Deployment Evidence</h2>
+<pre>docker compose -f docker-compose.deploy.yml pull — 4/4 images pulled
+ docker compose -f docker-compose.deploy.yml up -d — 4/4 services started
+ docker compose deployment status — all services running and healthy</pre>
+<h2>CI/CD</h2>
+<p>The `.github/workflows/cd.yml` workflow performs checkout, secret validation, Docker Buildx setup, Docker Hub login, builds, four tags, image deployment, health verification and API tests.</p>
+<p class="missing"><strong>Not claimed:</strong> no GitHub Actions run URL or Pull Request URL is available until the implementation is pushed and the user completes GitHub secret configuration.</p>
+<h2>Network Evidence</h2>
+<pre>Custom network: taskflow-deploy_taskflow-net
+Frontend IPv4: on taskflow-deploy_taskflow-net
+Backend IPv4: on taskflow-deploy_taskflow-net
+PostgreSQL IPv4: on taskflow-deploy_taskflow-net
+Redis IPv4: on taskflow-deploy_taskflow-net
+PostgreSQL and Redis host ports are not published.</pre>
+<h2>GitHub and Pull Request Status</h2>
+<p class="missing"><strong>Pending approval:</strong> push and Pull Request actions were not performed automatically. The report will need the final GitHub Actions run and Pull Request URLs once publication is approved.</p>
+<div class="declaration"><h2>Declaration</h2><p>I hereby declare that the submitted implementation has been completed by me. I have tested the Docker configurations, Docker Compose deployment, Docker Hub image publishing and GitHub Actions CI/CD pipeline. The screenshots and evidence included in this document represent my actual implementation.</p><p>Student Name: Kush<br>Roll Number: 202401100400113</p></div>
+</body></html>

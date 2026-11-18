@@ -1,3 +1,124 @@
+# TaskFlow — MSE-2 Docker and DevOps Practical (Set 2)
+
+## Project overview
+
+TaskFlow is a full-stack task management application containerized for the MSE-2 Evening Shift assignment. It includes a React/Vite frontend, Express API backend, PostgreSQL database, Redis cache, Docker Compose networking, persistent volumes, health checks, Docker Hub publication, and a GitHub Actions pipeline.
+
+## Technology stack
+
+- Frontend: React 18, Vite 5, Nginx Alpine
+- Backend: Node.js 20, Express 4, PostgreSQL client, Redis client
+- Data: PostgreSQL 16 Alpine, Redis 7 Alpine
+- Container platform: Docker and Docker Compose
+- CI/CD: GitHub Actions and Docker Buildx
+- Registry: Docker Hub
+
+## Repository layout
+
+```text
+frontend/                 React/Vite application and Nginx configuration
+backend/                  Express API and PostgreSQL schema
+backend/src/              Application, database and Redis source
+.github/workflows/        CI and CD GitHub Actions workflows
+docker-compose.yml        Local source-build deployment
+docker-compose.deploy.yml Image-based Docker Hub deployment
+submission.json           Submission identity metadata
+tests/                    Jest/Supertest API test suite
+```
+
+## Environment variables
+
+| Variable | Purpose |
+|---|---|
+| POSTGRES_DB | PostgreSQL database name |
+| POSTGRES_USER | PostgreSQL application user |
+| POSTGRES_PASSWORD | PostgreSQL password; never commit a real secret |
+| DATABASE_URL | Backend PostgreSQL connection URL using the `postgres` service name |
+| REDIS_URL | Redis URL using the `redis` service name |
+| JWT_SECRET | Secret used to sign API authentication tokens |
+| DOCKERHUB_USERNAME | Docker Hub account namespace |
+
+Copy `.env.example` to `.env`, change every placeholder, and keep `.env` out of Git.
+
+## Run from source
+
+```powershell
+cp .env.example .env
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+URLs:
+
+- Frontend: http://localhost:8080
+- Backend health: http://localhost:3000/health
+
+## Docker Hub publishing
+
+```powershell
+docker tag taskflow/frontend:local YOUR_DOCKERHUB_USERNAME/frontend:v1
+docker tag taskflow/frontend:local YOUR_DOCKERHUB_USERNAME/frontend:latest
+docker tag taskflow/backend:local YOUR_DOCKERHUB_USERNAME/backend:v1
+docker tag taskflow/backend:local YOUR_DOCKERHUB_USERNAME/backend:latest
+docker push YOUR_DOCKERHUB_USERNAME/frontend:v1
+docker push YOUR_DOCKERHUB_USERNAME/frontend:latest
+docker push YOUR_DOCKERHUB_USERNAME/backend:v1
+docker push YOUR_DOCKERHUB_USERNAME/backend:latest
+```
+
+## Image-based deployment
+
+```powershell
+docker compose -f docker-compose.deploy.yml pull
+docker compose -f docker-compose.deploy.yml up -d
+docker compose -f docker-compose.deploy.yml ps
+```
+
+The frontend and backend services use Docker Hub `latest` tags and contain no `build:` entries.
+
+## Testing commands
+
+```powershell
+docker compose config --quiet
+docker compose build
+docker compose up -d
+Invoke-RestMethod http://localhost:3000/health
+Invoke-WebRequest http://localhost:8080/
+cd tests
+npm install
+npm test
+cd ..
+```
+
+Persistence and Redis checks:
+
+```powershell
+docker compose stop postgres
+docker compose rm -f postgres
+docker compose up -d postgres
+docker compose exec postgres psql -U taskflow_user -d taskflow -c "SELECT COUNT(*) FROM tasks;"
+docker compose restart redis
+docker compose exec redis redis-cli ping
+```
+
+## CI/CD
+
+`.github/workflows/cd.yml` runs on pushes to `main`. It validates required secrets, builds both images with Buildx, pushes `v1` and `latest` tags, creates the deployment environment, validates and starts `docker-compose.deploy.yml`, checks the frontend/backend, runs API tests, and uploads a workflow summary. Required GitHub secrets are `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, and `POSTGRES_PASSWORD`. Secrets must be configured by the repository owner; they are never written into workflow source.
+
+## Student submission details
+
+- Student: KUSH
+- Roll number: 202401100400113
+- Section: B
+- Branch: AIML
+- GitHub: https://github.com/kush1246
+- Fork: https://github.com/kush1246/MSE-2-SSED-Evening
+- Original: https://github.com/atindeRR/MSE-2-SSED-Evening
+- Docker Hub: https://hub.docker.com/u/kushagra215
+
+---
+
 # Mid-Semester Examination – Software Engineering and DevOps
 ## Set 2 – Evening Shift
 

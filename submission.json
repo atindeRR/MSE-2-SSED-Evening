@@ -1,0 +1,24 @@
+{
+  "name": "Sarthak Sharma",
+  "studentName": "Sarthak Sharma",
+  "rollNumber": "202401100400166",
+  "section": "C",
+  "branch": "CSE(AI&ML)",
+  "githubUsername": "Sarthak752008",
+  "dockerhubUsername": "sarthaksharma9456",
+  "set": "Set 2 – Evening Shift",
+  "forkRepositoryUrl": "https://github.com/Sarthak752008/MSE-2-SSED-Evening",
+  "branchName": "docker-set-2-submission",
+  "images": {
+    "frontend": [
+      "sarthaksharma9456/frontend:v1",
+      "sarthaksharma9456/frontend:latest"
+    ],
+    "backend": [
+      "sarthaksharma9456/backend:v1",
+      "sarthaksharma9456/backend:latest"
+    ]
+  },
+  "dockerHubFrontendImageUrl": "https://hub.docker.com/r/sarthaksharma9456/frontend",
+  "dockerHubBackendImageUrl": "https://hub.docker.com/r/sarthaksharma9456/backend"
+}

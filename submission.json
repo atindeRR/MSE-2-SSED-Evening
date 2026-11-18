@@ -9,6 +9,6 @@
   "branchName": "main",
   "dockerHubFrontendImageUrl": "https://hub.docker.com/r/ask99ayush/frontend",
   "dockerHubBackendImageUrl": "https://hub.docker.com/r/ask99ayush/backend",
-  "pullRequestUrl": "",
-  "workflowRunUrl": ""
+  "pullRequestUrl": "https://github.com/atindeRR/MSE-2-SSED-Evening/pull/51",
+  "workflowRunUrl": "https://github.com/Ask99Ayush/MSE-2-SSED-AIML-A-2400291530067-AYUSH-RAO-CHAUDHARY/actions/runs/44278484051"
 }

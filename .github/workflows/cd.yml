@@ -1,3 +1,4 @@
+
 name: Docker Practical - Publish and Verify
 
 on:
@@ -17,9 +18,17 @@ jobs:
     name: Publish student's images to Docker Hub
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
       - name: Checkout student's repository
         uses: actions/checkout@v4
+
+      - name: Checkout instructor-controlled evaluation files
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: main
+          path: instructor-evaluation
 
       - name: Validate required Docker Hub secrets
         env:
@@ -44,8 +53,8 @@ jobs:
           context: ./backend
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v6
@@ -53,8 +62,8 @@ jobs:
           context: ./frontend
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/frontend:${{ github.sha }}
 
       - name: Create deployment environment file
         run: |
@@ -72,10 +81,12 @@ jobs:
       - name: Validate image-based deployment Compose
         run: |
           grep -q 'image:' docker-compose.deploy.yml
+
           if grep -Eq '^[[:space:]]+build:' docker-compose.deploy.yml; then
             echo "Deployment Compose must use published images, not build:"
             exit 1
           fi
+
           docker compose -f docker-compose.deploy.yml config --quiet
 
       - name: Pull published images
@@ -84,40 +95,40 @@ jobs:
       - name: Deploy using Docker Hub images
         run: docker compose -f docker-compose.deploy.yml up -d
 
-      - name: Verify deployment
+      - name: Smoke test
         run: |
           for attempt in $(seq 1 40); do
-            if curl --fail --silent http://localhost:3000/health; then
-              echo
-              echo "Deployment backend is healthy"
-              break
+            if curl -fsS http://localhost:8080/health; then
+              echo "Healthy after $attempt attempt(s)"
+              exit 0
             fi
-            if [ "$attempt" -eq 40 ]; then
-              docker compose -f docker-compose.deploy.yml ps
-              docker compose -f docker-compose.deploy.yml logs --no-color
-              exit 1
-            fi
+            echo "Attempt $attempt failed, retrying..."
             sleep 3
           done
-          curl --fail --silent http://localhost:8080/ > /dev/null
+          echo "Smoke test failed"
+          docker compose ps
+          docker compose logs
+          exit 1
 
-      - name: Run API tests against Docker Hub deployment
-        working-directory: tests
+      - name: Install test dependencies
+        working-directory: instructor-evaluation/tests
+        run: npm install
+
+      - name: Run API and Redis tests against Docker Hub deployment
+        working-directory: instructor-evaluation/tests
         env:
           BASE_URL: http://localhost:3000
           NODE_OPTIONS: --experimental-vm-modules
-        run: |
-          npm install
-          npm test
+        run: npm test
 
       - name: Record published image references
         run: |
           {
             echo "## Docker Hub publication"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Backend: `${{ secrets.DOCKERHUB_USERNAME }}/backend:latest`"
+            echo "- Frontend: `${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest`"
+            echo "- Commit: `${GITHUB_SHA}`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup deployment

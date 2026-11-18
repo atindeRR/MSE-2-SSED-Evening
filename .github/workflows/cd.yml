@@ -1,3 +1,4 @@
+
 name: Docker Practical - Publish and Verify
 
 on:
@@ -14,20 +15,23 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish student's images to Docker Hub
+    name: Build, Publish and Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
-      - name: Checkout student's repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate required Docker Hub secrets
+      - name: Validate required secrets
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
-          test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME secret" && exit 1)
-          test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN secret" && exit 1)
+          test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME" && exit 1)
+          test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN" && exit 1)
+          test -n "$POSTGRES_PASSWORD" || (echo "Missing POSTGRES_PASSWORD" && exit 1)
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,6 +48,7 @@ jobs:
           context: ./backend
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
 
@@ -53,27 +58,26 @@ jobs:
           context: ./frontend
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
 
       - name: Create deployment environment file
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
-          cat > .env <<'EOF'
-          POSTGRES_DB=taskflow
-          POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=deployment_change_me
-          DATABASE_URL=postgresql://taskflow_user:deployment_change_me@postgres:5432/taskflow
-          REDIS_URL=redis://redis:6379
-          JWT_SECRET=replace_with_a_long_random_secret
-          PORT=3000
-          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-          EOF
+          printf 'POSTGRES_DB=taskflow\n' > .env
+          printf 'POSTGRES_USER=taskflow_user\n' >> .env
+          printf 'POSTGRES_PASSWORD=%s\n' "$POSTGRES_PASSWORD" >> .env
+          printf 'DATABASE_URL=postgresql://taskflow_user:%s@postgres:5432/taskflow\n' "$POSTGRES_PASSWORD" >> .env
+          printf 'REDIS_URL=redis://redis:6379\n' >> .env
+          printf 'JWT_SECRET=%s\n' "$(openssl rand -hex 32)" >> .env
+          printf 'PORT=3000\n' >> .env
 
-      - name: Validate image-based deployment Compose
+      - name: Validate deployment Compose
         run: |
-          grep -q 'image:' docker-compose.deploy.yml
           if grep -Eq '^[[:space:]]+build:' docker-compose.deploy.yml; then
-            echo "Deployment Compose must use published images, not build:"
+            echo "Deployment Compose must use published images"
             exit 1
           fi
           docker compose -f docker-compose.deploy.yml config --quiet
@@ -87,9 +91,9 @@ jobs:
       - name: Verify deployment
         run: |
           for attempt in $(seq 1 40); do
-            if curl --fail --silent http://localhost:3000/health; then
+            if curl --fail --silent http://localhost:8080/health; then
               echo
-              echo "Deployment backend is healthy"
+              echo "Deployment is healthy"
               break
             fi
             if [ "$attempt" -eq 40 ]; then
@@ -101,22 +105,22 @@ jobs:
           done
           curl --fail --silent http://localhost:8080/ > /dev/null
 
-      - name: Run API tests against Docker Hub deployment
+      - name: Run API tests
         working-directory: tests
         env:
-          BASE_URL: http://localhost:3000
+          BASE_URL: http://localhost:8080
           NODE_OPTIONS: --experimental-vm-modules
         run: |
-          npm install
+          npm ci
           npm test
 
-      - name: Record published image references
+      - name: Record published images
         run: |
           {
             echo "## Docker Hub publication"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
+            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:v1\`"
+            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:v1\`"
             echo "- Commit: \`${GITHUB_SHA}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 

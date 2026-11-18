@@ -21,7 +21,7 @@ jobs:
       - name: Checkout student's repository
         uses: actions/checkout@v4
 
-      - name: Validate required Docker Hub secrets
+      - name: Validate required repository secrets
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -38,14 +38,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Normalize Docker Hub username
+        id: prep
+        run: |
+          DOCKER_USER=$(echo "${{ secrets.DOCKERHUB_USERNAME }}" | tr '[:upper:]' '[:lower:]')
+          echo "username=${DOCKER_USER}" >> "$GITHUB_OUTPUT"
+
       - name: Build and push backend
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
+            ${{ steps.prep.outputs.username }}/backend:latest
+            ${{ steps.prep.outputs.username }}/backend:v1
+            ${{ steps.prep.outputs.username }}/backend:${{ github.sha }}
+            ${{ steps.prep.outputs.username }}/taskflow-backend:latest
+            ${{ steps.prep.outputs.username }}/taskflow-backend:${{ github.sha }}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v6
@@ -53,20 +62,26 @@ jobs:
           context: ./frontend
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
+            ${{ steps.prep.outputs.username }}/frontend:latest
+            ${{ steps.prep.outputs.username }}/frontend:v1
+            ${{ steps.prep.outputs.username }}/frontend:${{ github.sha }}
+            ${{ steps.prep.outputs.username }}/taskflow-frontend:latest
+            ${{ steps.prep.outputs.username }}/taskflow-frontend:${{ github.sha }}
 
       - name: Create deployment environment file
+        env:
+          DOCKERHUB_USER: ${{ steps.prep.outputs.username }}
+          PG_PASS: ${{ secrets.POSTGRES_PASSWORD || 'deployment_change_me' }}
         run: |
-          cat > .env <<'EOF'
+          cat > .env <<EOF
           POSTGRES_DB=taskflow
           POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=deployment_change_me
-          DATABASE_URL=postgresql://taskflow_user:deployment_change_me@postgres:5432/taskflow
+          POSTGRES_PASSWORD=${PG_PASS}
+          DATABASE_URL=postgresql://taskflow_user:${PG_PASS}@postgres:5432/taskflow
           REDIS_URL=redis://redis:6379
           JWT_SECRET=replace_with_a_long_random_secret
           PORT=3000
-          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_USERNAME=${DOCKERHUB_USER}
           EOF
 
       - name: Validate image-based deployment Compose
@@ -115,8 +130,8 @@ jobs:
           {
             echo "## Docker Hub publication"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
+            echo "- Backend: \`${{ steps.prep.outputs.username }}/backend:latest\`"
+            echo "- Frontend: \`${{ steps.prep.outputs.username }}/frontend:latest\`"
             echo "- Commit: \`${GITHUB_SHA}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 

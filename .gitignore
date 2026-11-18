@@ -3,3 +3,7 @@ node_modules
 .DS_Store
 coverage
 dist
+*.pdf
+screenshots/
+
+build_examination_pdf.py

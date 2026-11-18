@@ -318,23 +318,23 @@ Include the following declaration at the end of your PDF:
 
 Before submitting, verify the following:
 
-- [ ] Repository forked successfully.
-- [ ] Frontend Dockerfile implemented using multi-stage build.
-- [ ] Backend Dockerfile implemented.
-- [ ] `docker-compose.yml` configured.
-- [ ] Custom Docker network created.
-- [ ] PostgreSQL named volume configured.
-- [ ] Required health checks implemented.
-- [ ] Frontend and backend images built successfully.
-- [ ] Both `v1` and `latest` tags pushed to Docker Hub.
-- [ ] `docker-compose.deploy.yml` uses published images.
-- [ ] Image-based deployment tested successfully.
-- [ ] Networking and persistence verified.
-- [ ] GitHub Actions CD workflow executed successfully.
-- [ ] Pull Request created against the original repository.
-- [ ] Instructor CI checks passed, wherever available.
-- [ ] PDF documentation prepared with all required screenshots.
-- [ ] PDF uploaded to Moodle.
-- [ ] PDF attached to the GitHub Pull Request.
+- [x] Repository forked successfully.
+- [x] Frontend Dockerfile implemented using multi-stage build.
+- [x] Backend Dockerfile implemented.
+- [x] `docker-compose.yml` configured.
+- [x] Custom Docker network created.
+- [x] PostgreSQL named volume configured.
+- [x] Required health checks implemented.
+- [x] Frontend and backend images built successfully.
+- [x] Both `v1` and `latest` tags pushed to Docker Hub.
+- [x] `docker-compose.deploy.yml` uses published images.
+- [x] Image-based deployment tested successfully.
+- [x] Networking and persistence verified.
+- [x] GitHub Actions CD workflow executed successfully.
+- [x] Pull Request created against the original repository.
+- [x] Instructor CI checks passed, wherever available.
+- [x] PDF documentation prepared with all required screenshots.
+- [x] PDF uploaded to Moodle.
+- [x] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**

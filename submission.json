@@ -1,0 +1,12 @@
+{
+  "student_name": "Badal Singh",
+  "roll_number": "202401100400071",
+  "section": "AIML-A",
+  "branch": "AIML",
+  "github_username": "BadalSinghh",
+  "dockerhub_username": "darkkenn",
+  "github_fork_url": "https://github.com/BadalSinghh/MSE-2-SSED-Evening",
+  "dockerhub_frontend_image": "darkkenn/frontend:latest",
+  "dockerhub_backend_image": "darkkenn/backend:latest",
+  "pull_request_title": "DOCKER-SET-2 | 202401100400071 | Badal Singh | AIML-A"
+}

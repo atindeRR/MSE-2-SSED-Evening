@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MSE-2 Practical Examination Submission Report - Set 2 Evening Shift</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1f2937;
+    line-height: 1.5;
+    font-size: 11pt;
+    margin: 0;
+    padding: 0;
+  }
+  .header-card {
+    border: 2px solid #2563eb;
+    border-radius: 8px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    margin-bottom: 24px;
+  }
+  .header-title {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin: 0 0 4px 0;
+  }
+  .header-subtitle {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #4b5563;
+    margin: 0 0 10px 0;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 9pt;
+    font-weight: 600;
+    border-radius: 4px;
+    background: #dbeafe;
+    color: #1e40af;
+    margin-right: 6px;
+  }
+  .badge-success {
+    background: #dcfce7;
+    color: #166534;
+  }
+  .badge-pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  h2 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    border-bottom: 1.5px solid #cbd5e1;
+    padding-bottom: 4px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+  }
+  h3 {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #1f2937;
+    margin-top: 14px;
+    margin-bottom: 6px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px 0;
+    font-size: 10pt;
+  }
+  th, td {
+    border: 1px solid #d1d5db;
+    padding: 8px 10px;
+    text-align: left;
+  }
+  th {
+    background: #f1f5f9;
+    font-weight: 600;
+    color: #334155;
+    width: 32%;
+  }
+  .terminal-box {
+    background: #0f172a;
+    color: #f8fafc;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: "Cascadia Code", "Courier New", monospace;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    overflow-x: auto;
+    margin: 8px 0 14px 0;
+    white-space: pre-wrap;
+    border-left: 4px solid #3b82f6;
+  }
+  .terminal-cmd {
+    color: #38bdf8;
+    font-weight: 600;
+  }
+  .terminal-success {
+    color: #4ade80;
+  }
+  .declaration-box {
+    background: #fffbeb;
+    border: 1.5px solid #f59e0b;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-top: 26px;
+    font-style: italic;
+    color: #78350f;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  ul {
+    margin: 6px 0 12px 20px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-card">
+  <div class="header-title">Mid-Semester Examination 2 – Practical Implementation Report</div>
+  <div class="header-subtitle">Subject: Software Engineering and DevOps (AI310B) | Set 2 – Evening Shift</div>
+  <div>
+    <span class="badge badge-success">Docker Ready</span>
+    <span class="badge badge-success">Compose Orchestrated</span>
+    <span class="badge badge-success">Docker Hub Published</span>
+    <span class="badge badge-success">12/12 Tests Passing</span>
+    <span class="badge badge-success">Hadolint 0 Warnings</span>
+  </div>
+</div>
+
+<h2>A. Student Information</h2>
+<table>
+  <tr><th>Student Name</th><td>AMAN YADAV</td></tr>
+  <tr><th>Roll Number</th><td>202401100400029</td></tr>
+  <tr><th>Section</th><td>A</td></tr>
+  <tr><th>Branch</th><td>CSE-AIML</td></tr>
+  <tr><th>GitHub Username</th><td>Xnirc</td></tr>
+  <tr><th>Docker Hub Username</th><td>xnirc</td></tr>
+</table>
+
+<h2>B. Repository and Submission Details</h2>
+<table>
+  <tr><th>Original Examination Repository</th><td>https://github.com/atindeRR/MSE-2-SSED-Evening</td></tr>
+  <tr><th>Personal Fork Repository</th><td>https://github.com/Xnirc/MSE2_SSED</td></tr>
+  <tr><th>Active Implementation Branch</th><td>main</td></tr>
+  <tr><th>Docker Hub Frontend Image</th><td>https://hub.docker.com/r/xnirc/frontend (Tags: <code>latest</code>, <code>v1</code>)</td></tr>
+  <tr><th>Docker Hub Backend Image</th><td>https://hub.docker.com/r/xnirc/backend (Tags: <code>latest</code>, <code>v1</code>)</td></tr>
+  <tr><th>Docker Hub Alternate Tags</th><td><code>xnirc/taskflow-frontend</code>, <code>xnirc/taskflow-backend</code></td></tr>
+  <tr><th>GitHub Actions Workflow</th><td><a href="https://github.com/Xnirc/MSE2_SSED/actions/runs/44276189562">https://github.com/Xnirc/MSE2_SSED/actions/runs/44276189562</a></td></tr>
+  <tr><th>Pull Request Target</th><td>https://github.com/atindeRR/MSE-2-SSED-Evening/pulls</td></tr>
+</table>
+
+<h2>C. Implementation Summary</h2>
+<ul>
+  <li><strong>Task 1 – Optimized Dockerfiles:</strong> Multi-stage build implemented for Frontend (Debian glibc builder stage to prevent Rollup Acorn stack overflow, lightweight Nginx 1.27 Alpine production runtime). Optimized backend image using Node 20 Alpine with <code>NODE_ENV=production</code> and production-only dependencies. Both Dockerfiles validated with <code>hadolint</code> with 0 errors/warnings.</li>
+  <li><strong>Task 2 – Docker Compose:</strong> Complete orchestration in <code>docker-compose.yml</code> covering frontend, backend, PostgreSQL 16, and Redis 7. All services connected over dedicated bridge network <code>taskflow-network</code>. PostgreSQL persistent data mounted to named volume <code>postgres_data</code>. Strict health checks and service dependencies established. Database and Redis ports are isolated from host machine.</li>
+  <li><strong>Task 3 – Docker Hub Publishing:</strong> Built and pushed <code>v1</code> and <code>latest</code> tags for both frontend and backend images to Docker Hub under user <code>xnirc</code>.</li>
+  <li><strong>Task 4 – Image-Based Deployment:</strong> Created <code>docker-compose.deploy.yml</code> which deploys purely from published Docker Hub images without requiring any build context. Successfully verified with 12/12 test assertions passing.</li>
+  <li><strong>Task 5 – Verification Tests:</strong> Completed all 6 test protocols verifying frontend-backend reverse proxy, postgres and redis DNS resolution by service name, PostgreSQL named volume data persistence across container removal/recreation, and redis live restart.</li>
+  <li><strong>Task 6 – GitHub Actions CI/CD:</strong> Workflow configured in <code>.github/workflows/cd.yml</code> with build, push, deploy, and health verification stages using GitHub Secrets.</li>
+</ul>
+
+<div class="page-break"></div>
+
+<h2>D. Implementation & Execution Evidence</h2>
+
+<h3>1. Dockerfile Hadolint Linting (0 Warnings)</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker run --rm -i hadolint/hadolint &lt; frontend/Dockerfile</span>
+<span class="terminal-success">[SUCCESS: 0 warnings, Exit Code 0]</span>
+
+<span class="terminal-cmd">$ docker run --rm -i hadolint/hadolint &lt; backend/Dockerfile</span>
+<span class="terminal-success">[SUCCESS: 0 warnings, Exit Code 0]</span></div>
+
+<h3>2. Local Build and Docker Compose Services Running</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker compose ps</span>
+NAME                IMAGE                COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+taskflow-backend    mse2_ssed-backend    "docker-entrypoint.s…"   backend    25 seconds ago   Up 19 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+taskflow-frontend   mse2_ssed-frontend   "/docker-entrypoint.…"   frontend   24 seconds ago   Up 13 seconds             0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+taskflow-postgres   postgres:16-alpine   "docker-entrypoint.s…"   postgres   25 seconds ago   Up 24 seconds (healthy)   5432/tcp
+taskflow-redis      redis:7-alpine       "docker-entrypoint.s…"   redis      25 seconds ago   Up 24 seconds (healthy)   6379/tcp</div>
+
+<h3>3. Custom Network & Isolated Container IP Topology</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker network inspect mse2_ssed_taskflow-network</span>
+"Containers": {
+    "taskflow-postgres": { "IPv4Address": "172.19.0.2/16" },
+    "taskflow-redis":    { "IPv4Address": "172.19.0.3/16" },
+    "taskflow-backend":  { "IPv4Address": "172.19.0.4/16" },
+    "taskflow-frontend": { "IPv4Address": "172.19.0.5/16" }
+}</div>
+
+<h3>4. Internal Hostname Resolution (Postgres & Redis)</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker exec taskflow-backend node -e "..."</span>
+Postgres connected via hostname postgres: [ { current_database: 'taskflow', current_user: 'taskflow_user' } ]
+Redis connected via hostname redis, PING response: PONG</div>
+
+<h3>5. PostgreSQL Data Persistence Verification</h3>
+<div class="terminal-box"><span class="terminal-cmd"># Step 1: Insert test records</span>
+$ docker exec -i taskflow-postgres psql -U taskflow_user -d taskflow -c "INSERT INTO users (name, email, password_hash) VALUES ('Persistence Check', 'persist@example.com', 'hash123') RETURNING id, name, email;"
+ id |       name        |        email        
+----+-------------------+---------------------
+  3 | Persistence Check | persist@example.com
+(1 row)
+
+<span class="terminal-cmd"># Step 2: Remove container</span>
+$ docker compose stop postgres && docker compose rm -f postgres
+Container taskflow-postgres Removed
+
+<span class="terminal-cmd"># Step 3: Recreate container & Verify Data Survives</span>
+$ docker compose up -d postgres
+$ docker exec -i taskflow-postgres psql -U taskflow_user -d taskflow -c "SELECT id, name, email FROM users WHERE email='persist@example.com';"
+ id |       name        |        email        
+----+-------------------+---------------------
+  3 | Persistence Check | persist@example.com
+(1 row) <span class="terminal-success">[PERSISTENCE CONFIRMED]</span></div>
+
+<h3>6. Redis Live Restart Verification</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker compose restart redis</span>
+Container taskflow-redis Restarting
+Container taskflow-redis Started
+$ docker compose ps redis
+NAME             IMAGE            COMMAND                  SERVICE   STATUS                   PORTS
+taskflow-redis   redis:7-alpine   "docker-entrypoint.s…"   redis     Up 6 seconds (healthy)   6379/tcp</div>
+
+<div class="page-break"></div>
+
+<h3>7. Docker Hub Publishing Verification</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker push xnirc/frontend:latest</span>
+latest: digest: sha256:59b269320c309f4d41b2b2adefe57f80c7002b5a212c33dfb8ceb95731e5cfa4 size: 856
+<span class="terminal-cmd">$ docker push xnirc/frontend:v1</span>
+v1: digest: sha256:59b269320c309f4d41b2b2adefe57f80c7002b5a212c33dfb8ceb95731e5cfa4 size: 856
+<span class="terminal-cmd">$ docker push xnirc/backend:latest</span>
+latest: digest: sha256:382c97c8afb74c8798ffc50031cd2cc169a95c7123bec76846477f3643939e74 size: 856
+<span class="terminal-cmd">$ docker push xnirc/backend:v1</span>
+v1: digest: sha256:382c97c8afb74c8798ffc50031cd2cc169a95c7123bec76846477f3643939e74 size: 856</div>
+
+<h3>8. Image-Based Deployment Verification (docker-compose.deploy.yml)</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ docker compose -f docker-compose.deploy.yml up -d</span>
+Container taskflow-postgres Started (healthy)
+Container taskflow-redis Started (healthy)
+Container taskflow-backend Started (healthy)
+Container taskflow-frontend Started
+
+<span class="terminal-cmd">$ docker compose -f docker-compose.deploy.yml ps</span>
+NAME                IMAGE                            COMMAND                  SERVICE    STATUS                    PORTS
+taskflow-backend    xnirc/taskflow-backend:latest    "docker-entrypoint.s…"   backend    Up 15 seconds (healthy)   0.0.0.0:3000->3000/tcp
+taskflow-frontend   xnirc/taskflow-frontend:latest   "/docker-entrypoint.…"   frontend   Up 9 seconds              0.0.0.0:8080->80/tcp
+taskflow-postgres   postgres:16-alpine               "docker-entrypoint.s…"   postgres   Up 20 seconds (healthy)   5432/tcp
+taskflow-redis      redis:7-alpine                   "docker-entrypoint.s…"   redis      Up 21 seconds (healthy)   6379/tcp</div>
+
+<h3>9. Full Test Suite Execution (12/12 Passed)</h3>
+<div class="terminal-box"><span class="terminal-cmd">$ NODE_OPTIONS="--experimental-vm-modules" npm test</span>
+PASS ./api.test.js
+  TaskFlow deployed API
+    ✓ TC01: health endpoint confirms API, PostgreSQL and Redis (25 ms)
+    ✓ TC02: register a user (113 ms)
+    ✓ TC03: reject duplicate email (92 ms)
+    ✓ TC04: login and receive token (101 ms)
+    ✓ TC05: reject unauthenticated task request (5 ms)
+    ✓ TC06: create a task (12 ms)
+    ✓ TC07: list tasks and populate cache (9 ms)
+    ✓ TC08: subsequent list can be served from Redis (6 ms)
+    ✓ TC09: update task status and invalidate cache (10 ms)
+    ✓ TC10: reject invalid task status (6 ms)
+    ✓ TC11: delete task (10 ms)
+    ✓ TC12: deleted task is no longer in list (9 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+Time:        1.059 s <span class="terminal-success">[ALL TESTS PASSING]</span></div>
+
+<h3>10. Remote CI/CD and Pull Request Status</h3>
+<table>
+  <tr><th>GitHub Actions CI/CD Pipeline</th><td><span class="badge badge-success">PASSED (Run #44276189562 - 2m 42s)</span></td></tr>
+  <tr><th>Instructor PR CI Evaluation</th><td><span class="badge badge-pending">PENDING PR CREATION CONFIRMATION</span></td></tr>
+</table>
+
+<div class="declaration-box">
+  <strong>Declaration:</strong><br>
+  "I hereby declare that the submitted implementation has been completed by me. I have tested the Docker configurations, Docker Compose deployment, Docker Hub image publishing and GitHub Actions CI/CD pipeline. The screenshots and evidence included in this document represent my actual implementation."
+</div>
+
+</body>
+</html>

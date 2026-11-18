@@ -1,5 +1,4 @@
-name: Docker Practical - Publish and Verify
-
+name: CD - Build, Publish and Deploy
 on:
   push:
     branches: [main]

@@ -78,9 +78,9 @@ body_val = ParagraphStyle(
 body_val_mono = ParagraphStyle(
     'BodyValMono',
     parent=styles['Normal'],
-    fontName='Courier',
+    fontName='Helvetica',
     fontSize=8,
-    leading=10.5,
+    leading=11,
     textColor=colors.HexColor('#0F172A')
 )
 
@@ -159,7 +159,7 @@ data_github = [
     [Paragraph("Pull Request URL:", body_bold), Paragraph(link_text("https://github.com/atindeRR/MSE-2-SSED-Evening/pull/5"), body_val_mono)],
     [Paragraph("Pull Request Title:", body_bold), Paragraph("DOCKER-SET-2 | 202401100400030 | Amit Kumar | AIML-A", body_val)],
 ]
-t2 = Table(data_github, colWidths=[180, 352])
+t2 = Table(data_github, colWidths=[160, 372])
 t2.setStyle(TableStyle([
     ('BOX', (0,0), (-1,-1), 0.5, BORDER_COLOR),
     ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
@@ -179,7 +179,7 @@ data_docker = [
     [Paragraph("Frontend Image (TaskFlow):", body_bold), Paragraph(link_text("https://hub.docker.com/r/itsamitashu/taskflow-frontend"), body_val_mono)],
     [Paragraph("Backend Image (TaskFlow):", body_bold), Paragraph(link_text("https://hub.docker.com/r/itsamitashu/taskflow-backend"), body_val_mono)],
 ]
-t3 = Table(data_docker, colWidths=[180, 352])
+t3 = Table(data_docker, colWidths=[160, 372])
 t3.setStyle(TableStyle([
     ('BOX', (0,0), (-1,-1), 0.5, BORDER_COLOR),
     ('INNERGRID', (0,0), (-1,-1), 0.5, BORDER_COLOR),
@@ -204,7 +204,7 @@ data_cicd = [
     [Paragraph("Execution Outcome:", body_bold), p_success],
     [Paragraph("Verified Stages:", body_bold), Paragraph(stages_desc, body_val)],
 ]
-t4 = Table(data_cicd, colWidths=[180, 352])
+t4 = Table(data_cicd, colWidths=[160, 372])
 t4.setStyle(TableStyle([
     ('BOX', (0,0), (-1,-1), 0.5, colors.HexColor('#86EFAC')),
     ('INNERGRID', (0,0), (-1,-1), 0.5, colors.HexColor('#BBF7D0')),

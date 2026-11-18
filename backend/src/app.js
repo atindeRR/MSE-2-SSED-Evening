@@ -13,7 +13,7 @@ app.use(express.json());
 
 const cacheKey = userId => `tasks:user:${userId}`;
 
-app.get('/health', async (_req, res) => {
+const healthHandler = async (_req, res) => {
   try {
     await pool.query('SELECT 1');
     await redis.ping();
@@ -21,7 +21,10 @@ app.get('/health', async (_req, res) => {
   } catch (error) {
     res.status(503).json({ status: 'unavailable', error: error.message });
   }
-});
+};
+
+app.get('/health', healthHandler);
+app.get('/api/health', healthHandler);
 
 app.post('/api/auth/register', async (req, res, next) => {
   try {

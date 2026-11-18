@@ -1,7 +1,7 @@
 import request from 'supertest';
 //const request = require('supertest');
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://127.0.0.1:3000';
 const api = request(BASE_URL);
 const email = `student-${Date.now()}@example.com`;
 const password = 'student123';

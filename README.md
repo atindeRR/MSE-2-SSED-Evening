@@ -338,3 +338,34 @@ Before submitting, verify the following:
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**
+## Run the implementation
+
+1. Copy `.env.example` to `.env` and replace the placeholder PostgreSQL password, JWT secret, and Docker Hub username with your own values. Keep `.env` private; it is ignored by Git.
+2. Build and start the local stack:
+
+   ```bash
+   docker compose up --build -d
+   docker compose ps
+   curl http://localhost:3000/health
+   ```
+
+3. Open the frontend at <http://localhost:8080>. PostgreSQL and Redis are reachable only on the Compose network; the backend uses the `postgres` and `redis` service names.
+4. Stop the stack with `docker compose down`. This preserves the named PostgreSQL volume. Use `docker compose down -v` only when you intend to erase its data.
+
+The frontend image uses a Node build stage and Nginx runtime. The backend image installs only production dependencies and runs as the non-root Node user. The Compose stack includes PostgreSQL and Redis health checks, backend health checks, a custom bridge network, and persistent PostgreSQL storage.
+
+## Publish and deploy
+
+Add `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, and `POSTGRES_PASSWORD` as repository Actions secrets. Push to `main` to run `.github/workflows/cd.yml`; it publishes `frontend:v1`, `frontend:latest`, `backend:v1`, and `backend:latest`, then deploys the `latest` images in `docker-compose.deploy.yml` and runs the API suite.
+
+For a manual image-based deployment, set `DOCKERHUB_USERNAME`, `POSTGRES_PASSWORD`, and a long random `JWT_SECRET` in `.env`, then run:
+
+```bash
+docker compose -f docker-compose.deploy.yml pull
+docker compose -f docker-compose.deploy.yml up -d
+docker compose -f docker-compose.deploy.yml ps
+```
+
+The image-based Compose file contains no `build:` directives for the frontend or backend. It expects the two images to have already been published to the Docker Hub account named by `DOCKERHUB_USERNAME`.
+
+The backend container contains the idempotent SQL schema and applies it when it connects to PostgreSQL. This keeps image-based deployment independent of a checked-out backend source tree.

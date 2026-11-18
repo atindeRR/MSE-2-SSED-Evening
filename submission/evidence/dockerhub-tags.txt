@@ -1,1 +1,7 @@
-﻿潄正牥䠠扵瀠扵楬⁣敲潰楳潴祲愠摮琠条瘠牥晩捩瑡潩൮刊攀瀀漀猀椀琀漀爀礀㨀 昀爀漀渀琀攀渀搀㬀 瀀爀椀瘀愀琀攀㨀 䘀愀氀猀攀㬀 漀眀渀攀爀㨀 最愀甀爀椀搀栀椀渀最爀愀ഀ਀吀愀最㨀 氀愀琀攀猀琀㬀 搀椀最攀猀琀㨀 猀栀愀㈀㔀㘀㨀昀愀㈀搀㔀㤀搀愀㐀㄀㤀愀㤀攀㔀㜀挀　㄀㐀㐀㌀昀愀搀挀㌀挀　㈀㘀　攀搀攀　㌀㔀㜀㈀挀㌀㌀㜀㠀愀㈀攀㐀戀㠀㤀㐀　㘀㤀　挀愀㘀　昀㘀㌀㬀 猀琀愀琀甀猀㨀 愀挀琀椀瘀攀ഀ਀吀愀最㨀 瘀㄀㬀 搀椀最攀猀琀㨀 猀栀愀㈀㔀㘀㨀昀愀㈀搀㔀㤀搀愀㐀㄀㤀愀㤀攀㔀㜀挀　㄀㐀㐀㌀昀愀搀挀㌀挀　㈀㘀　攀搀攀　㌀㔀㜀㈀挀㌀㌀㜀㠀愀㈀攀㐀戀㠀㤀㐀　㘀㤀　挀愀㘀　昀㘀㌀㬀 猀琀愀琀甀猀㨀 愀挀琀椀瘀攀ഀ਀刀攀瀀漀猀椀琀漀爀礀㨀 戀愀挀欀攀渀搀㬀 瀀爀椀瘀愀琀攀㨀 䘀愀氀猀攀㬀 漀眀渀攀爀㨀 最愀甀爀椀搀栀椀渀最爀愀ഀ਀吀愀最㨀 氀愀琀攀猀琀㬀 搀椀最攀猀琀㨀 猀栀愀㈀㔀㘀㨀挀㠀㌀㘀㄀攀㤀搀愀　搀戀㄀昀搀愀㈀㠀搀㜀㌀㄀昀㐀愀攀㜀戀昀㌀戀搀㤀㄀㄀㔀　攀㐀昀　㘀㜀挀　戀戀　㤀戀㐀挀㄀㈀戀挀㈀㌀戀戀㤀㈀㌀㌀㬀 猀琀愀琀甀猀㨀 愀挀琀椀瘀攀ഀ਀吀愀最㨀 瘀㄀㬀 搀椀最攀猀琀㨀 猀栀愀㈀㔀㘀㨀挀㠀㌀㘀㄀攀㤀搀愀　搀戀㄀昀搀愀㈀㠀搀㜀㌀㄀昀㐀愀攀㜀戀昀㌀戀搀㤀㄀㄀㔀　攀㐀昀　㘀㜀挀　戀戀　㤀戀㐀挀㄀㈀戀挀㈀㌀戀戀㤀㈀㌀㌀㬀 猀琀愀琀甀猀㨀 愀挀琀椀瘀攀ഀ਀
+Docker Hub public repository and tag verification
+Repository: frontend; private: False; owner: gauridhingra
+Tag: latest; digest: sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63; status: active
+Tag: v1; digest: sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63; status: active
+Repository: backend; private: False; owner: gauridhingra
+Tag: latest; digest: sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233; status: active
+Tag: v1; digest: sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233; status: active

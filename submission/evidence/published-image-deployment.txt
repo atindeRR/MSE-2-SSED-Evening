@@ -1,14 +1,12 @@
-﻿浉条ⵥ湯祬搠灥潬浹湥⁴敶楲楦慣楴湯⠠潤正牥挭浯潰敳搮灥潬⹹浹⥬‬晡整⁲潣牲捥整⁤慢正湥⁤異桳਍NAME                            IMAGE                          COMMAND                  SERVICE    CREATED              STATUS                        PORTS
-mse-2-ssed-evening-backend-1    gauridhingra/backend:latest    "docker-entrypoint.s…"   backend    About a minute ago   Up About a minute (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
-mse-2-ssed-evening-frontend-1   gauridhingra/frontend:latest   "/docker-entrypoint.…"   frontend   12 minutes ago       Up 12 minutes (healthy)       0.0.0.0:8081->80/tcp, [::]:8081->80/tcp
-mse-2-ssed-evening-postgres-1   postgres:16-alpine             "docker-entrypoint.s…"   postgres   12 minutes ago       Up 12 minutes (healthy)       5432/tcp
-mse-2-ssed-evening-redis-1      redis:7-alpine                 "docker-entrypoint.s…"   redis      12 minutes ago       Up 12 minutes (healthy)       6379/tcp
---- frontend and backend checks ---
-200
-{"status":"ok","postgres":"ok","redis":"ok"}
-{"status":"ok","postgres":"ok","redis":"ok"}
---- deployment network ---
-taskflow-deploy-network bridge
---- pulled application image IDs ---
-[gauridhingra/frontend:latest gauridhingra/frontend:v1] sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63
-[gauridhingra/backend:latest gauridhingra/backend:v1] sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233
+Image-only deployment verification (docker-compose.deploy.yml)
+Service | Image | State | Health
+backend|sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233|running|healthy
+frontend|sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63|running|healthy
+postgres|postgres:16-alpine|running|healthy
+redis|redis:7-alpine|running|healthy
+Frontend response status: 200
+Frontend proxy response: {"status":"ok","postgres":"ok","redis":"ok"}
+Backend response: {"status":"ok","postgres":"ok","redis":"ok"}
+Runtime application image references and immutable IDs:
+gauridhingra/frontend:latest sha256:fa2d59da419a9e57c01443fadc3c0260ede03572c3378a2e4b8940690ca60f63
+gauridhingra/backend:latest sha256:c8361e9da0db1fda28d731f4ae7bf3bd91150e4f067c0bb09b4c12bc23bb9233

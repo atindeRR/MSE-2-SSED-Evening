@@ -1,0 +1,2 @@
+﻿[gauridhingra/frontend:latest] sha256:879e01a9784873a0e308a0fb493709f6ad6395c8b04e8fc7a3f44784ac04e859
+[gauridhingra/backend:latest] sha256:f70ae926c06d048d4d0e4786bc25af4d64ea93e49d36b3e22478fee767c5d335

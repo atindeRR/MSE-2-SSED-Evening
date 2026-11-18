@@ -1,3 +1,4 @@
+
 name: Docker Practical - CI Evaluation
 
 on:
@@ -20,13 +21,13 @@ jobs:
     timeout-minutes: 25
 
     steps:
-      - name: Checkout submitted Pull Request commit
+      - name: Checkout submitted repository
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Checkout instructor-controlled evaluation files
+      - name: Checkout evaluation files
         uses: actions/checkout@v4
         with:
           repository: ${{ github.repository }}
@@ -84,9 +85,11 @@ jobs:
               echo "Backend is healthy"
               exit 0
             fi
+
             echo "Waiting for backend ($attempt/40)..."
             sleep 3
           done
+
           echo "Backend did not become healthy"
           docker compose ps
           docker compose logs --no-color
@@ -95,12 +98,13 @@ jobs:
       - name: Check frontend response
         run: |
           for attempt in $(seq 1 20); do
-            if curl --fail --silent http://localhost:8080/ > /dev/null; then
+            if curl --fail --silent http://localhost:8081/ > /dev/null; then
               echo "Frontend is responding"
               exit 0
             fi
             sleep 3
           done
+
           docker compose logs frontend
           exit 1
 
@@ -135,7 +139,7 @@ jobs:
             echo "- Commit: \`$GITHUB_SHA\`"
             echo "- Pull request: \`${{ github.event.pull_request.html_url || 'Manual run' }}\`"
             echo ""
-            echo "Review the workflow jobs and uploaded artifacts for detailed results."
+            echo "Review workflow jobs and uploaded artifacts for detailed results."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload evaluation artifacts

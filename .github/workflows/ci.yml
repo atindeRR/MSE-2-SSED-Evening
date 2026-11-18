@@ -57,15 +57,17 @@ jobs:
 
       - name: Create CI environment file
         run: |
-          cat > .env <<'EOF'
-          POSTGRES_DB=taskflow
-          POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=ci_test_password_123
-          DATABASE_URL=postgresql://taskflow_user:ci_test_password_123@postgres:5432/taskflow
-          REDIS_URL=redis://redis:6379
-          JWT_SECRET=ci_only_secret_change_for_real_deployment
-          PORT=3000
-          EOF
+          POSTGRES_PASSWORD="$(openssl rand -hex 24)"
+          JWT_SECRET="$(openssl rand -hex 32)"
+          {
+            printf 'POSTGRES_DB=taskflow\n'
+            printf 'POSTGRES_USER=taskflow_user\n'
+            printf 'POSTGRES_PASSWORD=%s\n' "$POSTGRES_PASSWORD"
+            printf 'JWT_SECRET=%s\n' "$JWT_SECRET"
+            printf 'FRONTEND_IMAGE=taskflow-frontend\n'
+            printf 'BACKEND_IMAGE=taskflow-backend\n'
+            printf 'IMAGE_TAG=ci\n'
+          } > .env
 
       - name: Validate Docker Compose configuration
         run: docker compose config --quiet
@@ -151,4 +153,4 @@ jobs:
 
       - name: Cleanup containers
         if: always()
-        run: docker compose down -v --remove-orphans || true
+        run: docker compose down --remove-orphans || true

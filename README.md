@@ -338,3 +338,200 @@ Before submitting, verify the following:
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**
+
+---
+
+# TaskFlow implementation guide
+
+This repository contains the completed Docker/DevOps implementation for the supplied TaskFlow application. The existing frontend and API behavior is preserved: React/Vite provides the UI, Nginx serves it and reverse-proxies `/api` and `/health`, and Express uses PostgreSQL plus Redis.
+
+## Requirement-to-implementation checklist
+
+| Assignment requirement | Implementation |
+| --- | --- |
+| Optimized frontend image | `frontend/Dockerfile`: cached dependency stage, Vite build, and non-root Nginx runtime |
+| Optimized backend image | `backend/Dockerfile`: production dependencies, `node` user, and API health check |
+| Four-service local stack | `docker-compose.yml`: frontend, backend, PostgreSQL, Redis, custom bridge, named database volume |
+| Docker Hub `v1` and `latest` images | Configurable repositories and the build/push commands below |
+| Image-only deployment | `docker-compose.deploy.yml`, with no application `build:` entries |
+| Networking/persistence evidence | `scripts/verify-compose.sh` and `docs/SCREENSHOT_GUIDE.md` |
+| CI/CD | `.github/workflows/cd.yml`; PRs test/build, `main` pushes publish and verify the published images |
+| Moodle report material | `docs/REPORT_OUTLINE.md` and `docs/SCREENSHOT_GUIDE.md` |
+
+## Architecture
+
+```text
+Browser :8080 -> Nginx frontend -> /api and /health -> Express backend :3000
+                                                   -> PostgreSQL :5432 (named volume)
+                                                   -> Redis :6379
+```
+
+All services attach to the private `taskflow-network` bridge. Only frontend port `8080` and backend port `3000` are published to the host; PostgreSQL and Redis are available only by their Compose service names.
+
+## Prerequisites
+
+- Docker Desktop with Docker Compose v2
+- Docker Hub account (only for Task 3/Task 4 publishing and deployment)
+- Node.js 20+ only when running tests outside containers
+- Bash/WSL/Git Bash only for `scripts/verify-compose.sh`; equivalent individual Docker commands are shown below
+
+## Environment configuration
+
+Create the local environment file and set strong, real values. Do not commit `.env`.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Set `POSTGRES_PASSWORD` and `JWT_SECRET` in `.env`. Use a URL-safe PostgreSQL password (letters, numbers, `_`, `-`) because Compose supplies it in the backend connection URL. `FRONTEND_IMAGE` and `BACKEND_IMAGE` are full Docker Hub repository names without tags; `IMAGE_TAG` selects a tag.
+
+`DATABASE_URL`, `REDIS_URL`, and `PORT` are intentionally not stored in `.env`: Compose supplies the correct container service names and ports to the backend.
+
+## Local development and Docker Compose
+
+For browser development, run `npm install` then `npm run dev` in `frontend/`. The frontend assumes `/api`, so use the Docker stack for the complete app unless you supply an API proxy yourself.
+
+Build and start the complete production-like local stack:
+
+```powershell
+docker compose up -d --build
+docker compose ps
+curl.exe http://localhost:3000/health
+Start-Process http://localhost:8080
+```
+
+Stop containers while retaining PostgreSQL data:
+
+```powershell
+docker compose down
+```
+
+Do not add `-v` when you intend to retain the `postgres_data` volume.
+
+## Docker image builds and Docker Hub publishing
+
+Create `frontend` and `backend` repositories in Docker Hub first. In PowerShell, use your actual Docker Hub username:
+
+```powershell
+$dockerHubUsername = "YOUR_DOCKERHUB_USERNAME"
+$frontendImage = "$dockerHubUsername/frontend"
+$backendImage = "$dockerHubUsername/backend"
+
+docker login
+docker build -t "${frontendImage}:v1" ./frontend
+docker tag "${frontendImage}:v1" "${frontendImage}:latest"
+docker build -t "${backendImage}:v1" ./backend
+docker tag "${backendImage}:v1" "${backendImage}:latest"
+
+docker push "${frontendImage}:v1"
+docker push "${frontendImage}:latest"
+docker push "${backendImage}:v1"
+docker push "${backendImage}:latest"
+```
+
+These commands prepare both required tags; this repository does not claim that they have been pushed from this machine. Verify the resulting tags in the Docker Hub web UI before documenting them.
+
+## Image-based deployment
+
+After the four images have been pushed, configure `.env` with your real repository names, for example:
+
+```dotenv
+DOCKERHUB_USERNAME=your-dockerhub-username
+FRONTEND_IMAGE=your-dockerhub-username/frontend
+BACKEND_IMAGE=your-dockerhub-username/backend
+IMAGE_TAG=latest
+```
+
+Validate that the deployment file contains images rather than application builds, then pull and run it:
+
+```powershell
+docker compose -f docker-compose.deploy.yml config --quiet
+docker compose -f docker-compose.deploy.yml pull
+docker compose -f docker-compose.deploy.yml up -d
+docker compose -f docker-compose.deploy.yml ps
+curl.exe http://localhost:8080/health
+```
+
+`docker-compose.deploy.yml` does not build frontend or backend images. It starts the official PostgreSQL and Redis images, then pulls the published frontend/backend image names from `.env`.
+
+## Networking, health, and persistence verification
+
+The reproducible PowerShell verification is:
+
+```powershell
+.\scripts\verify-compose.ps1
+```
+
+There is also a Bash/WSL equivalent:
+
+```bash
+bash scripts/verify-compose.sh
+```
+
+It checks the frontend reverse proxy, backend `/health`, PostgreSQL and Redis, network membership, restarts Redis, inserts a marker, recreates only the PostgreSQL container, and reads the same marker again. It never deletes the named volume.
+
+Useful individual commands are:
+
+```powershell
+docker network inspect taskflow_taskflow-network
+docker compose exec -T postgres sh -c 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+docker compose exec -T redis redis-cli ping
+docker compose exec -T backend node -e "fetch('http://localhost:3000/health').then(async r => { console.log(await r.text()); process.exit(r.ok ? 0 : 1) })"
+docker compose restart redis
+```
+
+## Tests
+
+With the Compose stack already healthy, run the API tests against it:
+
+```powershell
+Set-Location tests
+npm ci
+$env:BASE_URL = "http://localhost:3000"
+$env:NODE_OPTIONS = "--experimental-vm-modules"
+npm test
+Set-Location ..
+```
+
+## GitHub Actions CI/CD
+
+`.github/workflows/cd.yml` runs on pushes to `main`, pull requests targeting `main`, and manual dispatch. Pull requests run Compose validation, build both images, start the stack, wait for health, and run the API suite. A push to `main` additionally logs in to Docker Hub, pushes `v1` and `latest` for both images, deploys `docker-compose.deploy.yml` on the ephemeral GitHub-hosted runner, and verifies both health endpoints.
+
+Configure these repository secrets under **Settings → Secrets and variables → Actions**:
+
+| Secret | Required value |
+| --- | --- |
+| `DOCKERHUB_USERNAME` | Your Docker Hub username |
+| `DOCKERHUB_TOKEN` | Docker Hub access token with permission to push the two repositories |
+| `POSTGRES_PASSWORD` | Strong URL-safe PostgreSQL password used only by workflow-created runtime `.env` files |
+
+The workflow deploys only to its temporary GitHub-hosted verification runner. The assignment README does not provide remote-host credentials, so no remote-server deployment is inferred or claimed.
+
+## Moodle report and PR submission
+
+Follow [the screenshot guide](docs/SCREENSHOT_GUIDE.md) and fill [the report outline](docs/REPORT_OUTLINE.md) with your real identity, URLs, and captured evidence. Keep the exact declaration included in that outline.
+
+Commit and push only after locally reviewing the diff:
+
+```powershell
+git status
+git add .
+git commit -m "DOCKER-SET-2: containerize TaskFlow and add CI/CD"
+git push origin main
+```
+
+Create a Pull Request from your fork’s `main` branch to `atindeRR/MSE-2-SSED-Evening` `main`, using this exact title pattern:
+
+```text
+DOCKER-SET-2 | ROLL-NUMBER | STUDENT-NAME | SECTION
+```
+
+Attach the actual Moodle PDF to the PR if required by your instructor, then wait for the instructor CI check before submitting.
+
+## Troubleshooting
+
+- **Compose reports a required variable error:** copy `.env.example` to `.env` and replace `POSTGRES_PASSWORD` and `JWT_SECRET`; deployment also needs both image variables.
+- **Backend remains unhealthy:** inspect `docker compose logs backend postgres redis`; the database and Redis must be healthy first.
+- **Frontend loads but API fails:** check `docker compose exec frontend wget -qO- http://backend:3000/health` and verify the backend service is healthy.
+- **An image pull is denied:** create the Docker Hub repositories, push `v1` and `latest`, and ensure `FRONTEND_IMAGE`/`BACKEND_IMAGE` are your complete repository names.
+- **A previous database password is still used:** PostgreSQL only consumes initialization variables for a new volume. Preserve data intentionally, or explicitly remove the known `taskflow_postgres_data` volume only when a destructive reset is wanted.

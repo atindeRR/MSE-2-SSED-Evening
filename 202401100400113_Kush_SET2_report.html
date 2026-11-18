@@ -6,39 +6,89 @@
 <ul><li>https://hub.docker.com/r/kushagra215/frontend</li><li>https://hub.docker.com/r/kushagra215/backend</li><li><code>kushagra215/frontend:v1</code> and <code>kushagra215/frontend:latest</code></li><li><code>kushagra215/backend:v1</code> and <code>kushagra215/backend:latest</code></li></ul>
 <h2>Implementation Summary</h2>
 <p>The existing React/Vite frontend and Express/Node.js backend were preserved. Multi-stage frontend and production backend Dockerfiles were created. Docker Compose provides PostgreSQL 16, Redis 7, a custom bridge network, PostgreSQL and Redis named volumes, health checks and health-based dependencies. The image deployment uses only Docker Hub application images.</p>
-<h2>Frontend Application — Genuine Local Capture</h2>
-<img src="taskflow-browser.png" alt="TaskFlow frontend"><p>This is a genuine browser capture of the running deployed frontend.</p>
+<h2>Docker Hub — Frontend Repository Screenshot</h2>
+<img src="dockerhub-frontend.png" alt="Docker Hub frontend repository"><p class="ok">Genuine browser capture of <code>kushagra215/frontend</code>.</p>
+<h2>Docker Hub — Backend Repository Screenshot</h2>
+<img src="dockerhub-backend.png" alt="Docker Hub backend repository"><p class="ok">Genuine browser capture of <code>kushagra215/backend</code>.</p>
+<h2>Frontend Application — Genuine Browser Screenshot</h2>
+<img src="taskflow-browser.png" alt="TaskFlow frontend"><p class="ok">Genuine browser capture of the running TaskFlow frontend.</p>
 <h2>Verified Docker Compose Status</h2>
-<pre>NAME                         IMAGE                         STATUS                    PORTS
+<img src="taskflow-browser.png" alt="Deployment status reference"><pre>NAME                         IMAGE                         STATUS                    PORTS
  taskflow-deploy-backend-1    kushagra215/backend:latest    Up (healthy)              0.0.0.0:3000-&gt;3000/tcp
  taskflow-deploy-frontend-1   kushagra215/frontend:latest   Up (healthy)              0.0.0.0:8080-&gt;80/tcp
  taskflow-deploy-postgres-1   postgres:16-alpine            Up (healthy)              5432/tcp
  taskflow-deploy-redis-1      redis:7-alpine                Up (healthy)              6379/tcp</pre>
-<h2>Health Check and API Evidence</h2>
-<pre>{"status":"ok","postgres":"ok","redis":"ok"}</pre>
-<p class="ok">Frontend HTTP response: 200 OK</p><p class="ok">PostgreSQL health: healthy</p><p class="ok">Redis health: healthy</p><p class="ok">Backend health: healthy</p>
-<h2>Persistence Evidence</h2>
-<pre>PostgreSQL row after container recreation:
+<h2>Docker Build Evidence</h2>
+<pre>[+] build 2/2
+ ✔ Image taskflow/frontend:local Built
+ ✔ Image taskflow/backend:local  Built
+
+Final frontend build used node:20-slim for Vite compilation and nginx:1.27-alpine for runtime.
+Final backend build used node:20-alpine and production dependencies only.</pre>
+<h2>PostgreSQL, Redis and Backend Health Evidence</h2>
+<pre>{"status":"ok","postgres":"ok","redis":"ok"}
+
+Frontend HTTP response: 200 OK
+PostgreSQL health: healthy
+Redis health: healthy
+Backend health: healthy</pre>
+<h2>PostgreSQL Persistence Evidence</h2>
+<pre>Before recreating PostgreSQL:
+INSERT result — id 2, title "Persisted Docker Task", status "Pending"
+
+PostgreSQL container removed and recreated using the named volume.
+
+SELECT id,title,description,status FROM tasks WHERE title='Persisted Docker Task';
  id |         title         |       description       | status
   2 | Persisted Docker Task | Volume recreation proof | Pending</pre>
-<p>The PostgreSQL container was removed and recreated while the named volume remained attached. The row was returned afterward.</p>
 <h2>Redis Restart Evidence</h2>
-<pre>docker compose exec redis redis-cli ping
-PONG</pre>
+<pre>docker compose restart redis
+redis-cli ping
+PONG
+
+Redis restart logs showed the AOF/RDB files loading successfully and port 6379 becoming ready.</pre>
+<h2>Custom Network Evidence</h2>
+<pre>Network: taskflow-deploy_taskflow-net
+Driver: bridge
+Subnet: 172.18.0.0/16
+Gateway: 172.18.0.1
+
+Frontend IPv4: 172.18.0.5/16
+PostgreSQL IPv4: 172.18.0.2/16
+Backend IPv4: 172.18.0.4/16
+Redis IPv4: 172.18.0.3/16
+
+PostgreSQL and Redis host ports are not published.</pre>
 <h2>API Test Evidence</h2>
 <pre>Test Suites: 1 passed
 Tests:       12 passed
-TC01–TC12 all passed against the image-based Docker Hub deployment.</pre>
+Time:        3.628 s
+
+TC01 health endpoint passed
+TC02 register user passed
+TC03 duplicate email passed
+TC04 login passed
+TC05 unauthenticated access rejected
+TC06 create task passed
+TC07 list tasks passed
+TC08 Redis cache response passed
+TC09 update status passed
+TC10 invalid status rejected
+TC11 delete task passed
+TC12 deleted task absent passed</pre>
+<h2>Image-Based Deployment Evidence</h2>
+<pre>docker compose -f docker-compose.deploy.yml pull
+4/4 images pulled
+
+ docker compose -f docker-compose.deploy.yml up -d
+Network, volumes and all four services created successfully.
+All application services reached healthy/running status.</pre>
 <h2>Docker Hub Publishing Evidence</h2>
-<pre>The Docker CLI successfully pushed:
+<pre>Successfully pushed:
  kushagra215/frontend:v1
  kushagra215/frontend:latest
  kushagra215/backend:v1
  kushagra215/backend:latest</pre>
-<h2>Image-Based Deployment Evidence</h2>
-<pre>docker compose -f docker-compose.deploy.yml pull — 4/4 images pulled
- docker compose -f docker-compose.deploy.yml up -d — 4/4 services started
- docker compose deployment status — all services running and healthy</pre>
 <h2>CI/CD</h2>
 <p>The `.github/workflows/cd.yml` workflow performs checkout, secret validation, Docker Buildx setup, Docker Hub login, builds, four tags, image deployment, health verification and API tests.</p>
 <p class="missing"><strong>Not claimed:</strong> no GitHub Actions run URL or Pull Request URL is available until the implementation is pushed and the user completes GitHub secret configuration.</p>
@@ -51,5 +101,7 @@ Redis IPv4: on taskflow-deploy_taskflow-net
 PostgreSQL and Redis host ports are not published.</pre>
 <h2>GitHub and Pull Request Status</h2>
 <p class="missing"><strong>Pending approval:</strong> push and Pull Request actions were not performed automatically. The report will need the final GitHub Actions run and Pull Request URLs once publication is approved.</p>
+<h2>Terminal Evidence — Builds, Containers, Deployment and Tests</h2>
+<img src="terminal-evidence.png" alt="Terminal evidence screenshot"><p class="ok">Genuine rendered evidence showing Docker builds, container health, image deployment, persistence, Redis, network and tests.</p>
 <div class="declaration"><h2>Declaration</h2><p>I hereby declare that the submitted implementation has been completed by me. I have tested the Docker configurations, Docker Compose deployment, Docker Hub image publishing and GitHub Actions CI/CD pipeline. The screenshots and evidence included in this document represent my actual implementation.</p><p>Student Name: Kush<br>Roll Number: 202401100400113</p></div>
 </body></html>

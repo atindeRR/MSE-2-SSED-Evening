@@ -1,0 +1,5 @@
+﻿NAME                         IMAGE                         COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+taskflow-deploy-backend-1    kushagra215/backend:latest    "docker-entrypoint.sΓÇª"   backend    17 minutes ago   Up 17 minutes (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+taskflow-deploy-frontend-1   kushagra215/frontend:latest   "/docker-entrypoint.ΓÇª"   frontend   17 minutes ago   Up 17 minutes (healthy)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+taskflow-deploy-postgres-1   postgres:16-alpine            "docker-entrypoint.sΓÇª"   postgres   17 minutes ago   Up 17 minutes (healthy)   5432/tcp
+taskflow-deploy-redis-1      redis:7-alpine                "docker-entrypoint.sΓÇª"   redis      17 minutes ago   Up 17 minutes (healthy)   6379/tcp

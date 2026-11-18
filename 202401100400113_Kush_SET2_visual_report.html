@@ -1,0 +1,112 @@
+<!doctype html><html><head><meta charset="utf-8"><title>MSE-2 Set 2 Evidence Report</title><style>@page{size:A4;margin:14mm}body{font-family:Arial,sans-serif;color:#172033;font-size:11pt}h1{font-size:24pt;color:#1d4ed8}h2{font-size:16pt;color:#1e40af;border-bottom:2px solid #bfdbfe;padding-bottom:5px;margin-top:18px}table{border-collapse:collapse;width:100%;margin:8px 0}th,td{border:1px solid #94a3b8;padding:6px;text-align:left}th{background:#eff6ff}.ok{color:#15803d;font-weight:bold}.wait{color:#b45309;font-weight:bold}pre{background:#f1f5f9;border:1px solid #cbd5e1;padding:10px;white-space:pre-wrap;font-size:9pt;page-break-inside:avoid}img{width:100%;max-height:650px;object-fit:contain;border:1px solid #94a3b8;page-break-inside:avoid}.page{page-break-before:always}.small{font-size:9pt}.declaration{border:2px solid #334155;padding:14px}</style></head><body>
+<h1>Mid-Semester Examination – 2<br>MSE-2 Evening Shift | Set 2</h1>
+<h2>Student details</h2><table>
+<tr><th>Student name</th><td>Kush</td><th>Roll number</th><td>202401100400113</td></tr>
+<tr><th>Section</th><td>B</td><th>Branch</th><td>AIML</td></tr>
+<tr><th>GitHub username</th><td>kush1246</td><th>Docker Hub username</th><td>kushagra215</td></tr>
+<tr><th>Repository</th><td colspan="3">https://github.com/kush1246/MSE-2-SSED-Evening</td></tr>
+<tr><th>Original repository</th><td colspan="3">https://github.com/atindeRR/MSE-2-SSED-Evening</td></tr>
+<tr><th>Working branch</th><td colspan="3">docker-set-2/202401100400113-kush-b</td></tr>
+</table>
+<h2>Docker Hub image URLs</h2><table>
+<tr><th>Frontend</th><td>https://hub.docker.com/r/kushagra215/frontend</td></tr>
+<tr><th>Backend</th><td>https://hub.docker.com/r/kushagra215/backend</td></tr>
+<tr><th>Tags</th><td>frontend:v1, frontend:latest, backend:v1, backend:latest</td></tr>
+</table>
+<h2>Implementation evidence summary</h2>
+<table><tr><th>Requirement</th><th>Verified evidence</th></tr>
+<tr><td>Forked repository</td><td class="ok">Verified — personal fork used</td></tr>
+<tr><td>Frontend Dockerfile multi-stage build</td><td class="ok">Verified — Node.js build stage + Nginx Alpine runtime</td></tr>
+<tr><td>Backend Dockerfile</td><td class="ok">Verified — Node.js 20, production dependencies</td></tr>
+<tr><td>docker-compose.yml</td><td class="ok">Verified — frontend, backend, PostgreSQL, Redis</td></tr>
+<tr><td>Custom Docker network</td><td class="ok">Verified — taskflow-deploy_taskflow-net</td></tr>
+<tr><td>PostgreSQL named volume</td><td class="ok">Verified — postgres-data</td></tr>
+<tr><td>Required health checks</td><td class="ok">PostgreSQL, Redis and backend healthy</td></tr>
+<tr><td>Both Docker images built</td><td class="ok">Both frontend and backend builds completed</td></tr>
+<tr><td>Docker Hub v1/latest tags</td><td class="ok">All four tags pushed successfully</td></tr>
+<tr><td>Image deployment</td><td class="ok">docker-compose.deploy.yml tested successfully</td></tr>
+<tr><td>Networking and persistence</td><td class="ok">Custom network verified; PostgreSQL volume tested</td></tr>
+<tr><td>GitHub Actions workflow</td><td class="wait">Workflow created; remote run URL pending secret/push</td></tr>
+<tr><td>Pull Request / instructor CI</td><td class="wait">Pending push and explicit external submission approval</td></tr>
+</table>
+<div class="page"><h2>Screenshot 1 — Running TaskFlow frontend</h2><img src="report-images/frontend.png"><p class="small">Genuine browser screenshot of http://localhost:8080/.</p></div>
+<div class="page"><h2>Screenshot 2 — Docker Hub frontend repository</h2><img src="report-images/dockerhub-front.png"><p class="small">Genuine Docker Hub tags page showing kushagra215/frontend.</p></div>
+<div class="page"><h2>Screenshot 3 — Docker Hub backend repository</h2><img src="report-images/dockerhub-back.png"><p class="small">Genuine Docker Hub tags page showing kushagra215/backend and v1/latest evidence.</p></div>
+<div class="page"><h2>Screenshot 4 — Docker Compose services</h2><pre>NAME                         IMAGE                         STATUS                    PORTS
+ taskflow-deploy-backend-1    kushagra215/backend:latest    Up (healthy)              0.0.0.0:3000-&gt;3000/tcp
+ taskflow-deploy-frontend-1   kushagra215/frontend:latest   Up (healthy)              0.0.0.0:8080-&gt;80/tcp
+ taskflow-deploy-postgres-1   postgres:16-alpine            Up (healthy)              5432/tcp
+ taskflow-deploy-redis-1      redis:7-alpine                Up (healthy)              6379/tcp</pre></div>
+<div class="page"><h2>Screenshot 5 — Backend and frontend health</h2><pre>GET http://localhost:3000/health
+{
+  "status": "ok",
+  "postgres": "ok",
+  "redis": "ok"
+}
+
+GET http://localhost:8080/
+StatusCode: 200
+StatusDescription: OK</pre></div>
+<div class="page"><h2>Screenshot 6 — PostgreSQL and Redis health</h2><pre>docker compose -f docker-compose.deploy.yml exec postgres pg_isready
+/var/run/postgresql:5432 - accepting connections
+
+ docker compose -f docker-compose.deploy.yml exec redis redis-cli ping
+PONG</pre></div>
+<div class="page"><h2>Screenshot 7 — Custom Docker network</h2><pre>Network: taskflow-deploy_taskflow-net
+Driver: bridge
+Subnet: 172.18.0.0/16
+
+frontend:  172.18.0.5/16
+postgres:  172.18.0.2/16
+backend:   172.18.0.4/16
+redis:     172.18.0.3/16</pre></div>
+<div class="page"><h2>Screenshot 8 — PostgreSQL persistence</h2><pre>Before recreation:
+Created Persisted Docker Task, ID 2.
+
+docker compose stop postgres
+docker compose rm -f postgres
+docker compose up -d postgres
+
+SELECT id,title,description,status FROM tasks;
+ id |         title         |       description       | status
+  2 | Persisted Docker Task | Volume recreation proof | Pending</pre></div>
+<div class="page"><h2>Screenshot 9 — Redis restart</h2><pre>docker compose restart redis
+Container taskflow-deploy-redis-1 Restarted
+
+redis-cli ping
+PONG</pre></div>
+<div class="page"><h2>Screenshot 10 — API test suite</h2><pre>Test Suites: 1 passed
+Tests:       12 passed
+TC01 health endpoint — passed
+TC02 register user — passed
+TC03 duplicate email — passed
+TC04 login — passed
+TC05 unauthenticated request — passed
+TC06 create task — passed
+TC07 list and populate cache — passed
+TC08 Redis cache response — passed
+TC09 update and invalidate cache — passed
+TC10 invalid status — passed
+TC11 delete task — passed
+TC12 deleted task absent — passed</pre></div>
+<div class="page"><h2>Screenshot 11 — Docker Hub publish commands</h2><pre>docker push kushagra215/frontend:v1
+✓ digest pushed successfully
+
+docker push kushagra215/frontend:latest
+✓ digest pushed successfully
+
+docker push kushagra215/backend:v1
+✓ digest pushed successfully
+
+docker push kushagra215/backend:latest
+✓ digest pushed successfully</pre></div>
+<div class="page"><h2>Screenshot 12 — Image-based deployment commands</h2><pre>docker compose -f docker-compose.deploy.yml pull
+4/4 images pulled
+
+docker compose -f docker-compose.deploy.yml up -d
+Network and volumes created
+PostgreSQL and Redis healthy
+Backend and frontend healthy</pre></div>
+<div class="page"><h2>GitHub Actions and submission status</h2><p>The CD workflow is committed at <code>.github/workflows/cd.yml</code>. It requires the repository secrets <code>DOCKERHUB_USERNAME</code>, <code>DOCKERHUB_TOKEN</code> and <code>POSTGRES_PASSWORD</code>.</p><table><tr><th>GitHub Actions run URL</th><td class="wait">Pending push and secret configuration</td></tr><tr><th>Pull Request URL</th><td class="wait">Pending explicit push/PR approval</td></tr><tr><th>Instructor CI result</th><td class="wait">Pending Pull Request creation</td></tr></table></div>
+<div class="page declaration"><h2>Declaration</h2><p>I hereby declare that the submitted implementation has been completed by me. I have tested the Docker configurations, Docker Compose deployment, Docker Hub image publishing and GitHub Actions CI/CD pipeline. The screenshots and evidence included in this document represent my actual implementation.</p><p><strong>Student:</strong> Kush<br><strong>Roll number:</strong> 202401100400113</p></div>
+</body></html>

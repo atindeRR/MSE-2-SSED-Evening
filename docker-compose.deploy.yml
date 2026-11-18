@@ -33,6 +33,8 @@
   backend:
     image: shivamsingh2428/backend:latest
     container_name: taskflow-backend
+    ports:
+      - "3000:3000"
     restart: unless-stopped
     environment:
       PORT: 3000
@@ -70,3 +72,4 @@ volumes:
 networks:
   taskflow-network:
     driver: bridge
+

@@ -1,0 +1,11 @@
+{
+  "set": "DOCKER-SET-2",
+  "student_name": "Harsh Dubey",
+  "roll_number": "202401100400091",
+  "section": "B",
+  "branch": "AIML",
+  "github_username": "HarshDubey23",
+  "dockerhub_username": "harshdubeydev",
+  "frontend_image": "harshdubeydev/frontend",
+  "backend_image": "harshdubeydev/backend"
+}

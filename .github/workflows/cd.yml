@@ -12,64 +12,74 @@ concurrency:
   group: docker-practical-cd-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  BACKEND_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/backend
+  FRONTEND_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/frontend
+
 jobs:
   publish:
-    name: Publish student's images to Docker Hub
+    name: Build, push and deploy
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout student's repository
+      - name: 1. Checkout source code
         uses: actions/checkout@v4
 
-      - name: Validate required Docker Hub secrets
+      - name: Validate required secrets
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: |
           test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME secret" && exit 1)
           test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN secret" && exit 1)
+          test -n "$POSTGRES_PASSWORD" || (echo "Missing POSTGRES_PASSWORD secret" && exit 1)
 
-      - name: Set up Docker Buildx
+      - name: 2. Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
+      - name: 3. Build frontend image
+        run: docker build -t "$FRONTEND_IMAGE:latest" ./frontend
+
+      - name: 4. Build backend image
+        run: docker build -t "$BACKEND_IMAGE:latest" ./backend
+
+      - name: 5. Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push backend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./backend
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
+      - name: 6. Tag images with v1 and latest
+        run: |
+          docker tag "$FRONTEND_IMAGE:latest" "$FRONTEND_IMAGE:v1"
+          docker tag "$BACKEND_IMAGE:latest" "$BACKEND_IMAGE:v1"
+          docker image ls --filter "reference=$FRONTEND_IMAGE" --filter "reference=$BACKEND_IMAGE"
 
-      - name: Build and push frontend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
+      - name: 7. Push all tags to Docker Hub
+        run: |
+          docker push "$FRONTEND_IMAGE:v1"
+          docker push "$FRONTEND_IMAGE:latest"
+          docker push "$BACKEND_IMAGE:v1"
+          docker push "$BACKEND_IMAGE:latest"
 
       - name: Create deployment environment file
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          cat > .env <<'EOF'
-          POSTGRES_DB=taskflow
-          POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=deployment_change_me
-          DATABASE_URL=postgresql://taskflow_user:deployment_change_me@postgres:5432/taskflow
-          REDIS_URL=redis://redis:6379
-          JWT_SECRET=replace_with_a_long_random_secret
-          PORT=3000
-          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-          EOF
+          {
+            echo "POSTGRES_DB=taskflow"
+            echo "POSTGRES_USER=taskflow_user"
+            echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD"
+            echo "DATABASE_URL=postgresql://taskflow_user:$POSTGRES_PASSWORD@postgres:5432/taskflow"
+            echo "REDIS_URL=redis://redis:6379"
+            echo "JWT_SECRET=$(openssl rand -hex 32)"
+            echo "PORT=3000"
+            echo "DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME"
+          } > .env
 
-      - name: Validate image-based deployment Compose
+      - name: Validate deployment Compose (no build allowed)
         run: |
           grep -q 'image:' docker-compose.deploy.yml
           if grep -Eq '^[[:space:]]+build:' docker-compose.deploy.yml; then
@@ -78,18 +88,18 @@ jobs:
           fi
           docker compose -f docker-compose.deploy.yml config --quiet
 
-      - name: Pull published images
-        run: docker compose -f docker-compose.deploy.yml pull
+      - name: 8. Deploy using docker-compose.deploy.yml
+        run: |
+          docker image rm "$FRONTEND_IMAGE:latest" "$BACKEND_IMAGE:latest" || true
+          docker compose -f docker-compose.deploy.yml pull
+          docker compose -f docker-compose.deploy.yml up -d
 
-      - name: Deploy using Docker Hub images
-        run: docker compose -f docker-compose.deploy.yml up -d
-
-      - name: Verify deployment
+      - name: 9. Verify application and services
         run: |
           for attempt in $(seq 1 40); do
             if curl --fail --silent http://localhost:3000/health; then
               echo
-              echo "Deployment backend is healthy"
+              echo "Backend is healthy"
               break
             fi
             if [ "$attempt" -eq 40 ]; then
@@ -99,9 +109,11 @@ jobs:
             fi
             sleep 3
           done
-          curl --fail --silent http://localhost:8080/ > /dev/null
+          curl --fail --silent http://localhost:8080/ > /dev/null && echo "Frontend is responding"
+          curl --fail --silent http://localhost:8080/health && echo && echo "Frontend -> backend proxy works"
+          docker compose -f docker-compose.deploy.yml ps
 
-      - name: Run API tests against Docker Hub deployment
+      - name: Run API tests against deployment
         working-directory: tests
         env:
           BASE_URL: http://localhost:3000
@@ -110,14 +122,12 @@ jobs:
           npm install
           npm test
 
-      - name: Record published image references
+      - name: Record published images
         run: |
           {
             echo "## Docker Hub publication"
-            echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- \`$BACKEND_IMAGE:v1\`, \`$BACKEND_IMAGE:latest\`"
+            echo "- \`$FRONTEND_IMAGE:v1\`, \`$FRONTEND_IMAGE:latest\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup deployment

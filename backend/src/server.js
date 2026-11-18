@@ -1,9 +1,10 @@
 import app from './app.js';
 import { config } from './config.js';
-import { waitForDatabase } from './db.js';
+import { waitForDatabase, ensureSchema } from './db.js';
 import { connectRedis, redis } from './redis.js';
 
 await waitForDatabase();
+await ensureSchema();
 await connectRedis();
 
 const server = app.listen(config.port, '0.0.0.0', () => {

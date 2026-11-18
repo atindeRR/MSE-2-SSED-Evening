@@ -338,3 +338,37 @@ Before submitting, verify the following:
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**
+
+## Local implementation notes
+
+The Compose files read configuration from a root `.env` file. Start with the example and replace the local-only values:
+
+```bash
+cp .env.example .env
+docker compose up -d --build
+```
+
+The app is available at `http://localhost:8080`; the backend health endpoint is `http://localhost:3000/health`. PostgreSQL and Redis stay inside the custom Compose network. PostgreSQL data is stored in the named `postgres-data` volume, and the schema is initialized from `backend/db/init.sql` when the database first starts.
+
+The frontend image uses a Node build stage and an Nginx runtime stage. Nginx forwards `/api` and `/health` requests to the `backend` service. The backend accepts either `DATABASE_URL` or standard `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, and `PGPASSWORD` settings.
+
+To publish locally, authenticate with Docker Hub, then run:
+
+```bash
+docker compose build
+docker tag sharad64e/frontend:latest sharad64e/frontend:v1
+docker tag sharad64e/backend:latest sharad64e/backend:v1
+docker push sharad64e/frontend:latest
+docker push sharad64e/frontend:v1
+docker push sharad64e/backend:latest
+docker push sharad64e/backend:v1
+```
+
+For deployment using only published frontend and backend images, set `DOCKERHUB_USERNAME` and the environment values in `.env`, then run:
+
+```bash
+docker compose -f docker-compose.deploy.yml pull
+docker compose -f docker-compose.deploy.yml up -d
+```
+
+The `cd.yml` workflow publishes `frontend` and `backend` tags `v1` and `latest`, then deploys those images. Configure `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, and `POSTGRES_PASSWORD` as repository Actions secrets. Add `JWT_SECRET` as another secret for a separate signing key; if omitted, the workflow uses the database password as a fallback.

@@ -4,6 +4,10 @@ import { config } from './config.js';
 const { Pool } = pg;
 export const pool = new Pool({ connectionString: config.databaseUrl });
 
+// Idle clients emit 'error' when PostgreSQL goes away; log it instead of
+// letting an unhandled event terminate the API process.
+pool.on('error', error => console.error('PostgreSQL pool error:', error.message));
+
 export async function waitForDatabase() {
   for (let attempt = 1; attempt <= 30; attempt++) {
     try {

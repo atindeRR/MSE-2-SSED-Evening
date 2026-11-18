@@ -1,0 +1,26 @@
+
+> taskflow-tests@1.0.0 test
+> jest --runInBand
+
+(node:140539) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS ./api.test.js
+  TaskFlow deployed API
+    ✓ TC01: health endpoint confirms API, PostgreSQL and Redis (86 ms)
+    ✓ TC02: register a user (207 ms)
+    ✓ TC03: reject duplicate email (129 ms)
+    ✓ TC04: login and receive token (150 ms)
+    ✓ TC05: reject unauthenticated task request (6 ms)
+    ✓ TC06: create a task (12 ms)
+    ✓ TC07: list tasks and populate cache (12 ms)
+    ✓ TC08: subsequent list can be served from Redis (9 ms)
+    ✓ TC09: update task status and invalidate cache (12 ms)
+    ✓ TC10: reject invalid task status (7 ms)
+    ✓ TC11: delete task (9 ms)
+    ✓ TC12: deleted task is no longer in list (9 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+Snapshots:   0 total
+Time:        1.178 s, estimated 2 s
+Ran all test suites.

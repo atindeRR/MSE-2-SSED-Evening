@@ -1,0 +1,76 @@
+{
+    "Name": "taskflow-net",
+    "Id": "918facf194d2b8bb5afb6e5254b7e1fc2165a041f238ac533aa0ce493b73136c",
+    "Created": "2026-11-18T09:00:31.295627737Z",
+    "Scope": "local",
+    "Driver": "bridge",
+    "EnableIPv4": true,
+    "EnableIPv6": false,
+    "IPAM": {
+        "Driver": "default",
+        "Options": null,
+        "Config": [
+            {
+                "Subnet": "172.18.0.0/16",
+                "Gateway": "172.18.0.1"
+            }
+        ]
+    },
+    "Internal": false,
+    "Attachable": false,
+    "Ingress": false,
+    "ConfigFrom": {
+        "Network": ""
+    },
+    "ConfigOnly": false,
+    "Options": {
+        "com.docker.network.enable_ipv4": "true",
+        "com.docker.network.enable_ipv6": "false"
+    },
+    "Labels": {
+        "com.docker.compose.config-hash": "622a301fdd35e2f10a2fbcf0faf7455501d09fb82e3322d9a0549b5a03baa31b",
+        "com.docker.compose.network": "taskflow-net",
+        "com.docker.compose.project": "taskflow",
+        "com.docker.compose.version": "5.7.0"
+    },
+    "Containers": {
+        "0f1c3a5038c98a1501200badfae9b870fd9c7391fffda8c92beef45448d60db3": {
+            "Name": "taskflow-frontend-1",
+            "EndpointID": "5246a0abe139365015fc68f5f197579ec8a58e7ac81f118006fe1eefc8bbfb3b",
+            "MacAddress": "16:e7:a0:8e:5a:c8",
+            "IPv4Address": "172.18.0.5/16",
+            "IPv6Address": ""
+        },
+        "2eac22d2645cee40ddc72bbba9d2fc74d5b8346f0332ea4709c2bc5620d08166": {
+            "Name": "taskflow-redis-1",
+            "EndpointID": "10acaa28e9ba9b2ba9f08679b7854a9433ac139ac341bb009b5bfa1bc7c1b2f9",
+            "MacAddress": "2a:79:17:32:bb:54",
+            "IPv4Address": "172.18.0.3/16",
+            "IPv6Address": ""
+        },
+        "53b8f01eb4d321ba8acfb0e2d16ab87fcfe4cc4cb7b2ba20a3c319b1ea8eaeff": {
+            "Name": "taskflow-postgres-1",
+            "EndpointID": "e2d89f3e8025fb37ea555e67f91fc3b9ea2611eb091652dc69c0656ccbe76287",
+            "MacAddress": "86:a7:19:4d:d1:84",
+            "IPv4Address": "172.18.0.2/16",
+            "IPv6Address": ""
+        },
+        "b3c8d2954a4a4d19f2950aed6996cee35a235080a42880c5d62eedd2336d96b1": {
+            "Name": "taskflow-backend-1",
+            "EndpointID": "e908e33d1d30aee8887e213ae840954d40601f384138da530fc08a197ef36470",
+            "MacAddress": "fa:75:8a:07:cb:3a",
+            "IPv4Address": "172.18.0.4/16",
+            "IPv6Address": ""
+        }
+    },
+    "Status": {
+        "IPAM": {
+            "Subnets": {
+                "172.18.0.0/16": {
+                    "IPsInUse": 7,
+                    "DynamicIPsAvailable": 65529
+                }
+            }
+        }
+    }
+}

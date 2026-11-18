@@ -1,0 +1,39 @@
+ Network taskflow-net Creating 
+ Network taskflow-net Creating 
+ Network taskflow-net Created 
+ Network taskflow-net Created 
+ Container taskflow-postgres-1 Creating 
+ Container taskflow-redis-1 Creating 
+ Container taskflow-postgres-1 Created 
+ Container taskflow-redis-1 Created 
+ Container taskflow-backend-1 Creating 
+ Container taskflow-backend-1 Created 
+ Container taskflow-frontend-1 Creating 
+ Container taskflow-frontend-1 Created 
+ Container taskflow-postgres-1 Starting 
+ Container taskflow-redis-1 Starting 
+ Container taskflow-postgres-1 Started 
+ Container taskflow-postgres-1 Waiting 
+ Container taskflow-redis-1 Started 
+ Container taskflow-redis-1 Waiting 
+ Container taskflow-redis-1 Healthy 
+ Container taskflow-postgres-1 Healthy 
+ Container taskflow-backend-1 Starting 
+ Container taskflow-backend-1 Started 
+ Container taskflow-backend-1 Waiting 
+ Container taskflow-backend-1 Healthy 
+ Container taskflow-frontend-1 Starting 
+ Container taskflow-frontend-1 Started 
+ Container taskflow-postgres-1 Waiting 
+ Container taskflow-redis-1 Waiting 
+ Container taskflow-frontend-1 Waiting 
+ Container taskflow-backend-1 Waiting 
+ Container taskflow-backend-1 Healthy 
+ Container taskflow-redis-1 Healthy 
+ Container taskflow-postgres-1 Healthy 
+ Container taskflow-frontend-1 Healthy 
+NAME                  IMAGE                        COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+taskflow-backend-1    satyam3120/backend:latest    "docker-entrypoint.s…"   backend    19 seconds ago   Up 12 seconds (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+taskflow-frontend-1   satyam3120/frontend:latest   "/docker-entrypoint.…"   frontend   19 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+taskflow-postgres-1   postgres:16-alpine           "docker-entrypoint.s…"   postgres   19 seconds ago   Up 18 seconds (healthy)   5432/tcp
+taskflow-redis-1      redis:7-alpine               "docker-entrypoint.s…"   redis      19 seconds ago   Up 17 seconds (healthy)   6379/tcp

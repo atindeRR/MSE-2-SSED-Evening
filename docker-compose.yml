@@ -1,0 +1,98 @@
+name: taskflow
+
+# Build-based stack used for local development and for the instructor CI,
+# which runs `docker compose build` followed by `docker compose up -d`.
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    image: ${DOCKERHUB_USERNAME:-satyam3120}/frontend:local
+    ports:
+      - "8080:80"
+    networks:
+      - taskflow-net
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./backend
+    image: ${DOCKERHUB_USERNAME:-satyam3120}/backend:local
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # PostgreSQL and Redis are addressed by their Compose service names.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-taskflow_user}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}@postgres:5432/${POSTGRES_DB:-taskflow}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
+    networks:
+      - taskflow-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-taskflow}
+      POSTGRES_USER: ${POSTGRES_USER:-taskflow_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+    # No host port mapping: the database is only reachable on taskflow-net.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - taskflow-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-taskflow_user} -d ${POSTGRES_DB:-taskflow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    # No host port mapping: the cache is only reachable on taskflow-net.
+    networks:
+      - taskflow-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+networks:
+  taskflow-net:
+    name: taskflow-net
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: taskflow_postgres_data

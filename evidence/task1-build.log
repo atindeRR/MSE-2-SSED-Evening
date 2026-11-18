@@ -1,0 +1,168 @@
+ Image satyam3120/backend:local Building 
+ Image satyam3120/frontend:local Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.02kB done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.01kB done
+#2 DONE 0.0s
+
+#3 [frontend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 710B done
+#3 DONE 0.0s
+
+#4 [frontend] resolve image config for docker-image://docker.io/docker/dockerfile:1
+#4 DONE 1.3s
+
+#5 [backend] docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#5 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.1s done
+#5 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.1s done
+#5 CACHED
+
+#6 [frontend internal] load metadata for docker.io/library/node:22-alpine
+#6 DONE 1.4s
+
+#7 [frontend internal] load metadata for docker.io/library/nginx:1.27-alpine
+#7 DONE 1.4s
+
+#8 [backend internal] load .dockerignore
+#8 transferring context: 78B 0.0s done
+#8 DONE 0.1s
+
+#9 [frontend internal] load .dockerignore
+#9 transferring context: 77B 0.0s done
+#9 DONE 0.1s
+
+#10 [frontend internal] load build context
+#10 DONE 0.0s
+
+#11 [backend internal] load build context
+#11 transferring context: 283B 0.0s done
+#11 DONE 0.1s
+
+#12 [frontend deps 1/4] FROM docker.io/library/node:22-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a
+#12 resolve docker.io/library/node:22-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a 0.1s done
+#12 resolve docker.io/library/node:22-alpine@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a 0.1s done
+#12 DONE 0.1s
+
+#13 [backend deps 2/4] WORKDIR /app
+#13 CACHED
+
+#14 [frontend runtime 1/3] FROM docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10
+#14 resolve docker.io/library/nginx:1.27-alpine@sha256:65645c7bb6a0661892a8b03b89d0743208a18dd2f3f17a54ef4b76fb8e2f2a10 0.1s done
+#14 DONE 0.1s
+
+#10 [frontend internal] load build context
+#10 transferring context: 54.14kB 0.0s done
+#10 DONE 0.1s
+
+#15 [frontend runtime 2/3] COPY nginx.conf /etc/nginx/conf.d/default.conf
+#15 CACHED
+
+#16 [backend deps 3/4] COPY package.json package-lock.json ./
+#16 DONE 0.1s
+
+#17 [frontend build 3/7] COPY package.json package-lock.json ./
+#17 DONE 0.2s
+
+#18 [backend deps 4/4] RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
+#18 5.267 
+#18 5.267 added 109 packages in 5s
+#18 5.269 npm notice
+#18 5.269 npm notice New major version of npm available! 10.9.9 -> 12.2.3
+#18 5.269 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+#18 5.269 npm notice To update run: npm install -g npm@12.2.3
+#18 5.269 npm notice
+#18 5.573 npm warn using --force Recommended protections disabled.
+#18 DONE 6.2s
+
+#19 [frontend build 4/7] RUN npm ci --no-audit --no-fund
+#19 ...
+
+#20 [backend runtime 3/5] COPY --from=deps --chown=node:node /app/node_modules ./node_modules
+#20 DONE 0.6s
+
+#19 [frontend build 4/7] RUN npm ci --no-audit --no-fund
+#19 ...
+
+#21 [backend runtime 4/5] COPY --chown=node:node package.json ./
+#21 DONE 0.1s
+
+#22 [backend runtime 5/5] COPY --chown=node:node src ./src
+#22 DONE 0.2s
+
+#19 [frontend build 4/7] RUN npm ci --no-audit --no-fund
+#19 ...
+
+#23 [backend] exporting to image
+#23 exporting layers
+#23 exporting layers 0.9s done
+#23 exporting manifest sha256:fb855e624b4b408a9f4380f6ded56b0dfed033749003ee710e0cfff7200ff2ef 0.0s done
+#23 exporting config sha256:6bb11cd450581e5da0ac81d9bcffa47cd327495c8122a687685511f8fded7e95 0.0s done
+#23 exporting attestation manifest sha256:7a45b14ddb3c926b7d8665e4637436e0de0029b65f45cff0a5162278d39bdfee 0.0s done
+#23 exporting manifest list sha256:b6b9e29818d0c3010806a83750cb02028d6ace2f880335241dbe3b725df63dfb
+#23 exporting manifest list sha256:b6b9e29818d0c3010806a83750cb02028d6ace2f880335241dbe3b725df63dfb 0.0s done
+#23 naming to docker.io/satyam3120/backend:local done
+#23 unpacking to docker.io/satyam3120/backend:local
+#23 unpacking to docker.io/satyam3120/backend:local 1.3s done
+#23 DONE 2.5s
+
+#19 [frontend build 4/7] RUN npm ci --no-audit --no-fund
+#19 ...
+
+#24 [backend] resolving provenance for metadata file
+#24 DONE 0.0s
+
+#19 [frontend build 4/7] RUN npm ci --no-audit --no-fund
+#19 11.60 
+#19 11.60 added 62 packages in 11s
+#19 11.61 npm notice
+#19 11.61 npm notice New major version of npm available! 10.9.9 -> 12.2.3
+#19 11.61 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+#19 11.61 npm notice To update run: npm install -g npm@12.2.3
+#19 11.61 npm notice
+#19 DONE 11.8s
+
+#25 [frontend build 5/7] COPY index.html vite.config.js ./
+#25 DONE 0.1s
+
+#26 [frontend build 6/7] COPY src ./src
+#26 DONE 0.1s
+
+#27 [frontend build 7/7] RUN npm run build
+#27 0.764 
+#27 0.764 > taskflow-frontend@1.0.0 build
+#27 0.764 > vite build
+#27 0.764 
+#27 1.150 vite v5.4.21 building for production...
+#27 1.237 transforming...
+#27 2.419 ✓ 30 modules transformed.
+#27 2.569 rendering chunks...
+#27 2.580 computing gzip size...
+#27 2.592 dist/index.html                   0.36 kB │ gzip:  0.26 kB
+#27 2.592 dist/assets/index-CSCkzEz8.css    3.68 kB │ gzip:  1.35 kB
+#27 2.592 dist/assets/index-Dp5VgsuS.js   147.70 kB │ gzip: 47.52 kB
+#27 2.593 ✓ built in 1.40s
+#27 DONE 2.7s
+
+#28 [frontend runtime 3/3] COPY --from=build /app/dist /usr/share/nginx/html
+#28 DONE 0.1s
+
+#29 [frontend] exporting to image
+#29 exporting layers
+#29 exporting layers 0.5s done
+#29 exporting manifest sha256:1da1a34340222296c97cd8578a2475ca87d050a6faec967f9d8985ef6dacb863 0.0s done
+#29 exporting config sha256:50e99b58793d3a270d4fea7285626d80572812cbd15d75d7db2e5e99268dd731 0.0s done
+#29 exporting attestation manifest sha256:7a33dc8999dcfd4e1251b23a9a9a816db3b5e8cfbb0318dc5ed3accb8a5362e7
+#29 exporting attestation manifest sha256:7a33dc8999dcfd4e1251b23a9a9a816db3b5e8cfbb0318dc5ed3accb8a5362e7 0.0s done
+#29 exporting manifest list sha256:e8a3df83dbed58a1356e7f3b194a9e3bda240a56e8f074e2b1f92181093ec0ef 0.0s done
+#29 naming to docker.io/satyam3120/frontend:local done
+#29 unpacking to docker.io/satyam3120/frontend:local
+#29 unpacking to docker.io/satyam3120/frontend:local 1.6s done
+#29 DONE 2.3s
+
+#30 [frontend] resolving provenance for metadata file
+#30 DONE 0.0s
+ Image satyam3120/frontend:local Built 
+ Image satyam3120/backend:local Built 

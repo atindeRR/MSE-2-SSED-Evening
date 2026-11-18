@@ -1,0 +1,26 @@
+{
+  "student": {
+    "name": "Satyam Kumar",
+    "rollNumber": "202401100400167",
+    "section": "C",
+    "branch": "AIML",
+    "githubUsername": "Satyam-1o",
+    "dockerHubUsername": "satyam3120"
+  },
+  "repository": {
+    "fork": "https://github.com/Satyam-1o/MSE-2-SSED-Evening",
+    "branch": "main",
+    "pullRequest": "https://github.com/atindeRR/MSE-2-SSED-Evening/pull/42",
+    "workflowRun": "https://github.com/Satyam-1o/MSE-2-SSED-Evening/actions/runs/44277344534"
+  },
+  "images": {
+    "frontend": "satyam3120/frontend",
+    "backend": "satyam3120/backend",
+    "tags": ["v1", "latest"]
+  },
+  "deployment": {
+    "composeFile": "docker-compose.deploy.yml",
+    "frontendUrl": "http://localhost:8080",
+    "backendUrl": "http://localhost:3000"
+  }
+}

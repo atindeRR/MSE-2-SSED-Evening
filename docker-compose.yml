@@ -1,4 +1,5 @@
-﻿services:
+﻿
+services:
   postgres:
     image: postgres:17-alpine
     container_name: taskflow-postgres
@@ -34,6 +35,8 @@
     build: ./backend
     container_name: taskflow-backend
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     environment:
       PORT: 3000
       DATABASE_URL: postgresql://taskflow_user:change_this_db_password@postgres:5432/taskflow
@@ -70,3 +73,4 @@ volumes:
 networks:
   taskflow-network:
     driver: bridge
+

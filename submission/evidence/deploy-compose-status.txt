@@ -1,0 +1,5 @@
+﻿NAMES                             IMAGE                         STATUS                    PORTS
+taskflow-mse2-deploy-frontend-1   nischhallll/frontend:latest   Up 3 minutes (healthy)    0.0.0.0:8082->8080/tcp, [::]:8082->8080/tcp
+taskflow-mse2-deploy-backend-1    nischhallll/backend:latest    Up 3 minutes (healthy)    0.0.0.0:3001->3000/tcp, [::]:3001->3000/tcp
+taskflow-mse2-deploy-postgres-1   postgres:16-alpine            Up 17 minutes (healthy)   5432/tcp
+taskflow-mse2-deploy-redis-1      redis:7-alpine                Up 17 minutes (healthy)   6379/tcp

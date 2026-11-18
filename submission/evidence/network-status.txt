@@ -1,0 +1,4 @@
+﻿Name=taskflow-mse2-dev-network
+Driver=bridge
+Project=taskflow-mse2-dev
+Containers=

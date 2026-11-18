@@ -1,0 +1,5 @@
+﻿NAMES                          IMAGE                STATUS                    PORTS
+taskflow-mse2-dev-frontend-1   64e44e3014ea         Up 32 minutes (healthy)   0.0.0.0:8081->8080/tcp, [::]:8081->8080/tcp
+taskflow-mse2-dev-backend-1    add899086b9b         Up 32 minutes (healthy)   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+taskflow-mse2-dev-postgres-1   postgres:16-alpine   Up 37 minutes (healthy)   5432/tcp
+taskflow-mse2-dev-redis-1      redis:7-alpine       Up 30 minutes (healthy)   6379/tcp

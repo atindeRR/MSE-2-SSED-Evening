@@ -338,3 +338,21 @@ Before submitting, verify the following:
 - [ ] PDF attached to the GitHub Pull Request.
 
 **Good Luck!**
+
+---
+
+## TaskFlow container implementation
+
+The local development stack is defined in `docker-compose.yml`. It builds the frontend and backend images and runs them with PostgreSQL and Redis on a dedicated network. The frontend is served on host port 8080 by default and proxies `/api` and `/health` to the backend on host port 3000. Set `FRONTEND_PORT` or `BACKEND_PORT` in `.env` if those host ports are already in use.
+
+Copy `.env.example` to `.env` and replace the database password and JWT secret with local values before starting the stack. Keep `.env` private; it is ignored by Git.
+
+```powershell
+docker compose -p taskflow-mse2-dev config
+docker compose -p taskflow-mse2-dev build
+docker compose -p taskflow-mse2-dev up -d --wait
+```
+
+The separate `docker-compose.deploy.yml` uses the published `nischhallll/frontend:latest` and `nischhallll/backend:latest` images rather than building application source. Docker image repository names must be lowercase, so the Docker Hub namespace is written as `nischhallll`. The deployment uses its own Compose project, network, and PostgreSQL volume so it can be tested independently from local development.
+
+The `TaskFlow - Publish and Verify` workflow runs on pushes to `main` and can also be started manually. Configure `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, and `POSTGRES_PASSWORD` as repository Actions secrets. Its deployment is a temporary verification on a GitHub-hosted runner, not a persistent public server.

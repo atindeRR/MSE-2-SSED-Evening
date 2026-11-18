@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
 
   backend:
-    image: keshav0211/backend:latest
+    image: ${DOCKERHUB_USERNAME}/backend:latest
     environment:
       DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: ${REDIS_URL}
@@ -47,7 +47,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
       interval: 15s
       timeout: 5s
       retries: 5
@@ -55,7 +55,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: keshav0211/frontend:latest
+    image: ${DOCKERHUB_USERNAME}/frontend:latest
     ports:
       - "8080:80"
     networks:

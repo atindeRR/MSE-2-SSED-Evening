@@ -2,7 +2,7 @@ name: Build, publish and deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, docker-set-2-202501200400005]
   workflow_dispatch:
 
 permissions:

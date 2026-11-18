@@ -1,0 +1,135 @@
+name: Docker Practical - Build, Publish and Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-practical-cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish-and-deploy:
+    name: Build, publish and verify Docker Hub images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME secret" && exit 1)
+          test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN secret" && exit 1)
+          test -n "$POSTGRES_PASSWORD" || (echo "Missing POSTGRES_PASSWORD secret" && exit 1)
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend image tags
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/backend:v1
+            ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+
+      - name: Build and push frontend image tags
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/frontend:v1
+            ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+
+      - name: Prepare deployment environment
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import secrets
+          from urllib.parse import quote
+
+          username = os.environ["DOCKERHUB_USERNAME"]
+          password = os.environ["POSTGRES_PASSWORD"]
+          database_url = f"postgresql://taskflow_user:{quote(password, safe='')}@postgres:5432/taskflow"
+          values = {
+              "DOCKERHUB_USERNAME": username,
+              "POSTGRES_DB": "taskflow",
+              "POSTGRES_USER": "taskflow_user",
+              "POSTGRES_PASSWORD": password,
+              "DATABASE_URL": database_url,
+              "REDIS_URL": "redis://redis:6379",
+              "JWT_SECRET": secrets.token_urlsafe(48),
+          }
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env_file:
+              for key, value in values.items():
+                  env_file.write(f"{key}={value}\n")
+          PY
+
+      - name: Validate image-based Compose deployment
+        run: docker compose -f docker-compose.deploy.yml config --quiet
+
+      - name: Pull published images
+        run: docker compose -f docker-compose.deploy.yml pull
+
+      - name: Deploy published images
+        run: docker compose -f docker-compose.deploy.yml up -d
+
+      - name: Verify backend, frontend and dependencies
+        run: |
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://localhost:3000/health; then
+              echo
+              break
+            fi
+            if [ "$attempt" -eq 40 ]; then
+              docker compose -f docker-compose.deploy.yml ps
+              docker compose -f docker-compose.deploy.yml logs --no-color
+              exit 1
+            fi
+            sleep 3
+          done
+          curl --fail --silent http://localhost:8080/ > /dev/null
+          docker compose -f docker-compose.deploy.yml ps
+
+      - name: Run API tests against published-image deployment
+        working-directory: tests
+        env:
+          BASE_URL: http://localhost:3000
+          NODE_OPTIONS: --experimental-vm-modules
+        run: |
+          npm ci
+          npm test
+
+      - name: Record published image references
+        run: |
+          {
+            echo "## Docker Hub publication"
+            echo ""
+            echo "- Backend: `${DOCKERHUB_USERNAME}/backend:v1` and `${DOCKERHUB_USERNAME}/backend:latest`"
+            echo "- Frontend: `${DOCKERHUB_USERNAME}/frontend:v1` and `${DOCKERHUB_USERNAME}/frontend:latest`"
+            echo "- Commit: `${GITHUB_SHA}`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Stop deployment containers
+        if: always()
+        run: docker compose -f docker-compose.deploy.yml down --remove-orphans || true

@@ -17,9 +17,17 @@ jobs:
     name: Publish student's images to Docker Hub
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
       - name: Checkout student's repository
         uses: actions/checkout@v4
+
+      - name: Checkout instructor-controlled evaluation files
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: main
+          path: instructor-evaluation
 
       - name: Validate required Docker Hub secrets
         env:
@@ -72,10 +80,12 @@ jobs:
       - name: Validate image-based deployment Compose
         run: |
           grep -q 'image:' docker-compose.deploy.yml
+
           if grep -Eq '^[[:space:]]+build:' docker-compose.deploy.yml; then
             echo "Deployment Compose must use published images, not build:"
             exit 1
           fi
+
           docker compose -f docker-compose.deploy.yml config --quiet
 
       - name: Pull published images
@@ -92,31 +102,36 @@ jobs:
               echo "Deployment backend is healthy"
               break
             fi
+
             if [ "$attempt" -eq 40 ]; then
               docker compose -f docker-compose.deploy.yml ps
               docker compose -f docker-compose.deploy.yml logs --no-color
               exit 1
             fi
+
             sleep 3
           done
+
           curl --fail --silent http://localhost:8080/ > /dev/null
 
-      - name: Run API tests against Docker Hub deployment
-        working-directory: tests
+      - name: Install test dependencies
+        working-directory: instructor-evaluation/tests
+        run: npm install
+
+      - name: Run API and Redis tests against Docker Hub deployment
+        working-directory: instructor-evaluation/tests
         env:
           BASE_URL: http://localhost:3000
           NODE_OPTIONS: --experimental-vm-modules
-        run: |
-          npm install
-          npm test
+        run: npm test
 
       - name: Record published image references
         run: |
           {
             echo "## Docker Hub publication"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
+            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/backend:latest\`"
+            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest\`"
             echo "- Commit: \`${GITHUB_SHA}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 

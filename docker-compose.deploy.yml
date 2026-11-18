@@ -1,0 +1,76 @@
+services:
+  frontend:
+    image: sapphire2112/frontend:v1
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - deploy-network
+
+  backend:
+    image: sapphire2112/backend:v1
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://taskflow:taskflow_password@postgres:5432/taskflow
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: mse2_deployment_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:3000/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - deploy-network
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: taskflow
+      POSTGRES_USER: taskflow
+      POSTGRES_PASSWORD: taskflow_password
+    volumes:
+      - deploy-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U taskflow -d taskflow
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - deploy-network
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - deploy-network
+
+networks:
+  deploy-network:
+    driver: bridge
+
+volumes:
+  deploy-postgres-data:

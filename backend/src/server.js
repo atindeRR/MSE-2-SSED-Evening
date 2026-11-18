@@ -1,9 +1,11 @@
+
 import app from './app.js';
 import { config } from './config.js';
-import { waitForDatabase } from './db.js';
+import { waitForDatabase, initializeDatabase, pool } from './db.js';
 import { connectRedis, redis } from './redis.js';
 
 await waitForDatabase();
+await initializeDatabase();
 await connectRedis();
 
 const server = app.listen(config.port, '0.0.0.0', () => {
@@ -13,7 +15,9 @@ const server = app.listen(config.port, '0.0.0.0', () => {
 async function shutdown() {
   server.close();
   if (redis.isOpen) await redis.quit();
+  await pool.end();
   process.exit(0);
 }
+
 process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);

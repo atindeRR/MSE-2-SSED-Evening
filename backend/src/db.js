@@ -1,8 +1,13 @@
+
 import pg from 'pg';
 import { config } from './config.js';
+import { readFile } from 'node:fs/promises';
 
 const { Pool } = pg;
-export const pool = new Pool({ connectionString: config.databaseUrl });
+
+export const pool = new Pool({
+  connectionString: config.databaseUrl
+});
 
 export async function waitForDatabase() {
   for (let attempt = 1; attempt <= 30; attempt++) {
@@ -15,5 +20,17 @@ export async function waitForDatabase() {
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
   }
+
   throw new Error('Could not connect to PostgreSQL after 30 attempts');
+}
+
+export async function initializeDatabase() {
+  const sql = await readFile(
+    new URL('../db/init.sql', import.meta.url),
+    'utf8'
+  );
+
+  await pool.query(sql);
+
+  console.log('Database tables initialized successfully');
 }

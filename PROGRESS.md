@@ -1,7 +1,7 @@
 # Implementation Progress — MSE-2 SET 2 (TaskFlow)
 
-Last checkpoint: 2026-11-18 (~14:55 local). Repository root:
-`C:\Users\SAKSHI\MSE-2-SSED-Evening`. Branch: `main` (no implementation branch created yet).
+Last checkpoint: 2026-11-18 (~15:05 local). Repository root:
+`C:\Users\SAKSHI\MSE-2-SSED-Evening`. Current branch: `feat/docker-cicd` (committed `2e5de04`, pushed to origin).
 `origin` = `https://github.com/spirals-coder/MSE-2-SSED-Evening.git` (personal fork — correct).
 `upstream` = NOT yet configured. Add: `https://github.com/atindeRR/MSE-2-SSED-Evening.git`.
 
@@ -56,8 +56,10 @@ Evidence dir: `C:\Users\SAKSHI\AppData\Local\Temp\opencode\mse2-evidence\`
 ## PENDING
 
 1. **Phase 8 — `.github/workflows/cd.yml`**: replace existing file. On push to main: checkout → validate secrets (`DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `POSTGRES_PASSWORD`) → Buildx with GHA cache → Docker Hub login → build/push 4 tags (frontend/backend with v1 + latest) → create `.env` from secrets (NO hardcoded password) → assert no `build:` in deploy compose → `config`/`pull`/`up -d` → health + API smoke tests + `ps` → cleanup `down -v` under `if: always()`. Fail explicitly. Leave `ci.yml` untouched. Validate YAML.
-2. **Phase 9 — GitHub**: add `upstream` remote; create branch (e.g. `feat/docker-cicd`), commit (`feat: containerize application and implement Docker CI/CD`), push to fork. Need personal info from user for PR title: `DOCKER-SET-2 | ROLL-NUMBER | STUDENT-NAME | SECTION`. `gh` unavailable → use `git` for push; PR via REST API using stored Git credential (never echo) or give pre-filled URL. Create PR to `atindeRR/MSE-2-SSED-Evening:main`. Verify PR URL and CI checks. Never merge/force-push.
-3. **Phase 10 — PDF**: `ROLL_NUMBER_STUDENT_NAME_SET2.pdf` with sections A–E, exact declaration, genuine evidence, unavailable items marked Pending. Need: student name, roll number, section, branch (Git config only gives `Sakshi` / `sakshi.2428cseaiml62@kiet.edu` — do NOT guess). Install PDF lib locally (`pip install reportlab`) — no PDF libs currently installed. Commit PDF so it appears in PR; explain manual Moodle upload / PR attachment.
+2. **Phase 9 — GitHub**: DONE: `upstream` remote added; branch `feat/docker-cicd` committed (`2e5de04`) and pushed to origin. PENDING: PR creation needs personal info for exact title `DOCKER-SET-2 | ROLL-NUMBER | STUDENT-NAME | SECTION`. `gh` unavailable → PR via REST API using stored Git credential (never echo) or pre-filled browser URL. Target `atindeRR/MSE-2-SSED-Evening:main`. Verify instructor CI checks. Never merge/force-push.
+3. **Phase 8 status — CD workflow**: `.github/workflows/cd.yml` replaced with full build→publish→deploy→test→cleanup pipeline; PyYAML syntax validation passed. NOT YET RUN: checked GitHub API and the fork has **zero Actions secrets configured**. User must add `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`, `POSTGRES_PASSWORD` at `https://github.com/spirals-coder/MSE-2-SSED-Evening/settings/secrets/actions` before any workflow run can pass. Do not ask for the token value in chat.
+
+4. **Phase 10 — PDF**: `ROLL_NUMBER_STUDENT_NAME_SET2.pdf` with sections A–E, exact declaration, genuine evidence, unavailable items marked Pending. Need: student name, roll number, section, branch (Git config only gives `Sakshi` / `sakshi.2428cseaiml62@kiet.edu` — do NOT guess). Install PDF lib locally (`pip install reportlab`) — no PDF libs currently installed. Commit PDF so it appears in PR; explain manual Moodle upload / PR attachment.
 4. **Final report** with checklist (Completed/Failed/Pending), URLs, statuses.
 
 ## BLOCKERS / INFO NEEDED FROM USER

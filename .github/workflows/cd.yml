@@ -1,3 +1,4 @@
+
 name: Docker Practical - Publish and Verify
 
 on:
@@ -8,26 +9,33 @@ on:
 permissions:
   contents: read
 
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
 concurrency:
   group: docker-practical-cd-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   publish:
-    name: Publish student's images to Docker Hub
+    name: Publish and deploy Docker images
     runs-on: ubuntu-latest
     timeout-minutes: 30
+
     steps:
-      - name: Checkout student's repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate required Docker Hub secrets
+      - name: Validate required secrets
         env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          test -n "$DOCKERHUB_USERNAME" || (echo "Missing DOCKERHUB_USERNAME secret" && exit 1)
-          test -n "$DOCKERHUB_TOKEN" || (echo "Missing DOCKERHUB_TOKEN secret" && exit 1)
+          test -n "$DOCKERHUB_USERNAME" || exit 1
+          test -n "$DOCKERHUB_TOKEN" || exit 1
+          test -n "$POSTGRES_PASSWORD" || exit 1
+          test -n "$JWT_SECRET" || exit 1
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,8 +52,8 @@ jobs:
           context: ./backend
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:${{ github.sha }}
 
       - name: Build and push frontend
         uses: docker/build-push-action@v6
@@ -53,27 +61,20 @@ jobs:
           context: ./frontend
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:v1
             ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:${{ github.sha }}
 
-      - name: Create deployment environment file
+      - name: Verify Docker Hub images
         run: |
-          cat > .env <<'EOF'
-          POSTGRES_DB=taskflow
-          POSTGRES_USER=taskflow_user
-          POSTGRES_PASSWORD=deployment_change_me
-          DATABASE_URL=postgresql://taskflow_user:deployment_change_me@postgres:5432/taskflow
-          REDIS_URL=redis://redis:6379
-          JWT_SECRET=replace_with_a_long_random_secret
-          PORT=3000
-          DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-          EOF
+          docker manifest inspect "$DOCKERHUB_USERNAME/taskflow-backend:v1"
+          docker manifest inspect "$DOCKERHUB_USERNAME/taskflow-backend:latest"
+          docker manifest inspect "$DOCKERHUB_USERNAME/taskflow-frontend:v1"
+          docker manifest inspect "$DOCKERHUB_USERNAME/taskflow-frontend:latest"
 
-      - name: Validate image-based deployment Compose
+      - name: Validate deployment Compose
         run: |
-          grep -q 'image:' docker-compose.deploy.yml
           if grep -Eq '^[[:space:]]+build:' docker-compose.deploy.yml; then
-            echo "Deployment Compose must use published images, not build:"
+            echo "Deployment Compose must use published images only"
             exit 1
           fi
           docker compose -f docker-compose.deploy.yml config --quiet
@@ -81,45 +82,62 @@ jobs:
       - name: Pull published images
         run: docker compose -f docker-compose.deploy.yml pull
 
-      - name: Deploy using Docker Hub images
+      - name: Deploy published images
         run: docker compose -f docker-compose.deploy.yml up -d
 
-      - name: Verify deployment
+      - name: Verify container health
         run: |
-          for attempt in $(seq 1 40); do
-            if curl --fail --silent http://localhost:3000/health; then
-              echo
-              echo "Deployment backend is healthy"
-              break
-            fi
-            if [ "$attempt" -eq 40 ]; then
-              docker compose -f docker-compose.deploy.yml ps
-              docker compose -f docker-compose.deploy.yml logs --no-color
-              exit 1
-            fi
-            sleep 3
-          done
-          curl --fail --silent http://localhost:8080/ > /dev/null
+          for service in postgres redis backend; do
+            container_id=$(docker compose -f docker-compose.deploy.yml ps -q "$service")
 
-      - name: Run API tests against Docker Hub deployment
+            for attempt in $(seq 1 40); do
+              health=$(docker inspect --format='{{.State.Health.Status}}' "$container_id" 2>/dev/null || true)
+
+              if [ "$health" = "healthy" ]; then
+                echo "$service is healthy"
+                break
+              fi
+
+              if [ "$attempt" -eq 40 ]; then
+                echo "$service failed health check"
+                docker compose -f docker-compose.deploy.yml logs
+                exit 1
+              fi
+
+              sleep 3
+            done
+          done
+
+      - name: Verify frontend and backend endpoints
+        run: |
+          curl --fail --retry 10 --retry-delay 3 http://localhost:3001/health
+          curl --fail --retry 10 --retry-delay 3 http://localhost:8081/
+          curl --fail --retry 10 --retry-delay 3 http://localhost:8081/health
+
+      - name: Run API tests
         working-directory: tests
         env:
-          BASE_URL: http://localhost:3000
+          BASE_URL: http://localhost:3001
           NODE_OPTIONS: --experimental-vm-modules
         run: |
-          npm install
+          npm ci
           npm test
 
-      - name: Record published image references
+      - name: Generate workflow summary
+        if: always()
         run: |
           {
-            echo "## Docker Hub publication"
+            echo "## Docker Hub Publication and Deployment"
             echo ""
-            echo "- Backend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-backend:latest\`"
-            echo "- Frontend: \`${{ secrets.DOCKERHUB_USERNAME }}/taskflow-frontend:latest\`"
-            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Backend: $DOCKERHUB_USERNAME/taskflow-backend:latest"
+            echo "- Frontend: $DOCKERHUB_USERNAME/taskflow-frontend:latest"
+            echo "- Commit: $GITHUB_SHA"
+            echo "- Result: ${{ job.status }}"
+            echo ""
+            echo "Deployment was tested on a temporary GitHub-hosted runner."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cleanup deployment
         if: always()
-        run: docker compose -f docker-compose.deploy.yml down -v --remove-orphans || true
+        run: |
+          docker compose -f docker-compose.deploy.yml down --remove-orphans || true

@@ -1,4 +1,9 @@
 node_modules
 npm-debug.log
 .env
+*.env
+tests
+npm-debug.log
+.git
+coverage
 tests

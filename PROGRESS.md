@@ -1,8 +1,8 @@
 # Implementation Progress — MSE-2 SET 2 (TaskFlow)
 
 Checkpoint: 2026-11-18 (~16:05 local). Repository: `C:\Users\SAKSHI\MSE-2-SSED-Evening`.
-Student: Sakshi | 202401100400162 | SEC_A | CSE(AIML).
-PR: https://github.com/atindeRR/MSE-2-SSED-Evening/pull/60 (title corrected to `DOCKER-SET-2 | 202401100400162 | Sakshi | SEC_A`).
+Student: Sakshi | 202401100400162 | SEC_C | CSE(AIML).
+PR: https://github.com/atindeRR/MSE-2-SSED-Evening/pull/60 (title corrected to `DOCKER-SET-2 | 202401100400162 | Sakshi | SEC_C`).
 PDF: `202401100400162_Sakshi_SET2.pdf` generated and verified (9 pages, exact declaration, no secrets).
 `origin` = `https://github.com/spirals-coder/MSE-2-SSED-Evening.git` (correct).
 `upstream` = `https://github.com/atindeRR/MSE-2-SSED-Evening.git` (configured).
@@ -42,7 +42,7 @@ PDF: `202401100400162_Sakshi_SET2.pdf` generated and verified (9 pages, exact de
 
 1. Confirm latest CD run (after `e527b7c`) completed successfully and all steps passed; refresh `github-actions.txt`.
 2. Re-verify Docker Hub manifests after the CD rebuild; re-capture image-based deployment evidence with new image IDs.
-3. **PR title** — DONE: patched to `DOCKER-SET-2 | 202401100400162 | Sakshi | SEC_A`. Instructor CI is `action_required` (upstream maintainer approval) — cannot be forced; reported honestly. Local replication of every instructor CI step passed with a clean volume (`instructor-ci-local.txt`).
+3. **PR title** — DONE: patched to `DOCKER-SET-2 | 202401100400162 | Sakshi | SEC_C`. Instructor CI is `action_required` (upstream maintainer approval) — cannot be forced; reported honestly. Local replication of every instructor CI step passed with a clean volume (`instructor-ci-local.txt`).
 4. **PDF** — DONE: `202401100400162_Sakshi_SET2.pdf` generated with reportlab; verified A/B/C/D sections, exact declaration, 12/12 tests, Hub tags, workflows, PR URL; JWT/password redaction confirmed. To do: commit/push to fork, add PR comment linking the PDF, and user must upload it to Moodle manually.
 5. Final report with Completed/Failed/Pending checklist.
 

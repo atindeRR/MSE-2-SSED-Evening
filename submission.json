@@ -1,0 +1,9 @@
+{
+  "student_name": "Aryan Tomar",
+  "roll_number": "202401100400055",
+  "section": "AIML A",
+  "github_username": "TechyTomar",
+  "dockerhub_username": "aryantomar09",
+  "frontend_image": "aryantomar09/frontend:latest",
+  "backend_image": "aryantomar09/backend:latest"
+}

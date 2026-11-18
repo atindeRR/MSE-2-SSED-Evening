@@ -1,0 +1,96 @@
+# ---------------------------------------------------------------
+# TaskFlow - image-based deployment (Task 4)
+#   docker compose -f docker-compose.deploy.yml up -d
+# Frontend/backend images come from Docker Hub; nothing is built here.
+# Required in .env: DOCKERHUB_USERNAME, POSTGRES_PASSWORD, JWT_SECRET
+# ---------------------------------------------------------------
+name: taskflow-deploy
+
+services:
+  postgres:
+    image: postgres:16-alpine          # official image
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-taskflow}
+      POSTGRES_USER: ${POSTGRES_USER:-taskflow_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+    volumes:
+      # Named volume -> data survives container removal/recreation
+      - postgres-data:/var/lib/postgresql/data
+      # Schema file only (no build); applied on first initialisation of the volume
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    # No "ports:" -> not exposed to the host
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - taskflow-network
+
+  redis:
+    image: redis:7-alpine              # official image
+    restart: unless-stopped
+    # No "ports:" -> not exposed to the host
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - taskflow-network
+
+  backend:
+    # Published Docker Hub image, "latest" tag - no build: section
+    image: ${DOCKERHUB_USERNAME:?DOCKERHUB_USERNAME must be set}/backend:latest
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-3000}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-taskflow_user}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-taskflow}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - taskflow-network
+
+  frontend:
+    # Published Docker Hub image, "latest" tag - no build: section
+    image: ${DOCKERHUB_USERNAME:?DOCKERHUB_USERNAME must be set}/frontend:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskflow-network
+
+networks:
+  taskflow-network:
+    name: taskflow-deploy-network
+    driver: bridge
+
+volumes:
+  postgres-data:
+    name: taskflow-deploy-postgres-data

@@ -3,6 +3,10 @@ import { config } from './config.js';
 
 const { Pool } = pg;
 export const pool = new Pool({ connectionString: config.databaseUrl });
+// Without this listener an idle client dropped by PostgreSQL (e.g. when the
+// postgres container is restarted/recreated) emits an unhandled 'error' event
+// and crashes the API. The pool discards the broken client and reconnects.
+pool.on('error', error => console.error('PostgreSQL pool error:', error.message));
 
 export async function waitForDatabase() {
   for (let attempt = 1; attempt <= 30; attempt++) {

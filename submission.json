@@ -1,0 +1,12 @@
+{
+  "set": "DOCKER-SET-2",
+  "student_name": "Upwan Singh",
+  "roll_number": "202401100400200",
+  "section": "C",
+  "branch": "CSE (AIML)",
+  "github_username": "UpwanSingh",
+  "dockerhub_username": "upwan01",
+  "fork_repository": "https://github.com/UpwanSingh/MSE-2-SSED-Evening",
+  "frontend_image": "upwan01/frontend:latest",
+  "backend_image": "upwan01/backend:latest"
+}
